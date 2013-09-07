@@ -1,4 +1,0 @@
-#!/bin/bash
-ctags --java-kinds=+p --fields=+iaS -R --totals=yes ./src ./test/src
-find . -name '*.java' > cscope.files
-cscope -b -q -i cscope.files
