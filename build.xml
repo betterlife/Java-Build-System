@@ -155,19 +155,22 @@
         <mkdir dir="${assemble.path.lib}"/>        
     </target>
     <target name="compile" depends="init">
-        <javac
-            srcdir="${build.production.src}"
-            destdir="${build.production.classes}"
-            source="1.5"
-            debug="true"
-            encoding="UTF-8"
-            target="1.5">
-            <include name="**/*.java"/>
-            <exclude name="**/${build.production.src.exclude}"/>
-            <classpath>
-                <path refid="common.classpath"/>
-            </classpath>
-        </javac>
+      <javac
+          srcdir            ="${build.production.src}"
+          destdir           ="${build.production.classes}"
+          source            ="1.5"
+          debug             ="true"
+          includeantruntime ="false"
+          encoding          ="UTF-8"
+          fork              = "true"
+          target            ="1.5">
+        <compilerarg value="-J-Duser.language=en"/>
+        <include name="**/*.java"/>
+        <exclude name="**/${build.production.src.exclude}"/>
+        <classpath>
+          <path refid="common.classpath"/>
+        </classpath>
+      </javac>
     </target>
 
     <target name="cc:instrument" depends="compile">
@@ -194,12 +197,14 @@
 
     <target name="junit:compile" depends="compile">
         <javac
-            srcdir   = "${build.test.src}"
-            destdir  = "${build.test.classes}"
-            debug    = "true"
-            source   = "1.5"
-            encoding = "UTF-8"
-            target   = "1.5">
+            srcdir            = "${build.test.src}"
+            destdir           = "${build.test.classes}"
+            debug             = "true"
+            includeantruntime ="false"
+            encoding          ="UTF-8"
+            fork              = "true"
+            source            = "1.5"
+            target            = "1.5">
             <include name="**/*.java"/>
             <classpath>
                 <pathelement location="${build.production.classes}"/>
