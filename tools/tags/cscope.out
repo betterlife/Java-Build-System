@@ -1,0 +1,752 @@
+cscope 15 $HOME/Text/Projects/template -q 0000000085 0000003684
+	@test/src/JettyServer.java
+
+1 
+impÜt
+ 
+	gJ‘tyUt
+;
+
+3 
+public
+ cÏs 
+	cJ‘tyS”v”
+ {
+
+4 
+public
+ 
+	$maš
+(
+SŒšg
+[] 
+¬gs
+è
+throws
+ 
+Exû±iÚ
+ {
+
+5 
+J‘tyUt
+.
+	`š™J‘ty
+();
+
+7 
+	}
+}
+
+	@test/src/JettyUtil.java
+
+1 
+impÜt
+ 
+	gÜg
+.
+	g­ache
+.
+	gaxis
+.
+	gŒª¥Üt
+.
+	gh‰p
+.
+	gAdmšS”vËt
+;
+
+2 
+impÜt
+ 
+	gÜg
+.
+	g­ache
+.
+	gaxis
+.
+	gŒª¥Üt
+.
+	gh‰p
+.
+	gAxisS”vËt
+;
+
+3 
+impÜt
+ 
+	gÜg
+.
+	geş£
+.
+	gj‘ty
+.
+	g£rv”
+.
+	gS”v”
+;
+
+4 
+impÜt
+ 
+	gÜg
+.
+	geş£
+.
+	gj‘ty
+.
+	g£rv”
+.
+	gbio
+.
+	gSock‘CÚÃùÜ
+;
+
+5 
+impÜt
+ 
+	gÜg
+.
+	geş£
+.
+	gj‘ty
+.
+	g£rvËt
+.
+	gS”vËtCÚ‹xtHªdËr
+;
+
+6 
+impÜt
+ 
+	gÜg
+.
+	geş£
+.
+	gj‘ty
+.
+	g£rvËt
+.
+	gS”vËtHŞd”
+;
+
+8 
+public
+ cÏs 
+	cJ‘tyUt
+ {
+
+9 
+´iv©e
+ 
+S”v”
+ 
+	m_£rv”
+;
+
+11 
+public
+ 
+synchrÚized
+ 
+	$š™J‘ty
+(è
+throws
+ 
+Exû±iÚ
+ {
+
+12 
+_£rv”
+ = 
+Ãw
+ 
+	`S”v”
+(8080);
+
+13 
+Sock‘CÚÃùÜ
+ 
+cÚÃùÜ
+ = 
+Ãw
+ 
+	`Sock‘CÚÃùÜ
+();
+
+14 
+_£rv”
+.
+	`addCÚÃùÜ
+(
+cÚÃùÜ
+);
+
+16 
+S”vËtHŞd”
+ 
+axisS”vËthŞd”
+ = 
+Ãw
+ 
+	`S”vËtHŞd”
+Òew 
+	`AxisS”vËt
+());
+
+17 
+S”vËtHŞd”
+ 
+axisAdmšS”vËthŞd”
+ = 
+Ãw
+ 
+	`S”vËtHŞd”
+Òew 
+	`AdmšS”vËt
+());
+
+19 
+S”vËtCÚ‹xtHªdËr
+ 
+roÙ
+ = 
+Ãw
+ 
+	`S”vËtCÚ‹xtHªdËr
+(
+_£rv”
+, "/", S”vËtCÚ‹xtHªdËr.
+SESSIONS
+);
+
+20 
+roÙ
+.
+	`addS”vËt
+(
+axisS”vËthŞd”
+, "/servlet/AxisServlet");
+
+21 
+roÙ
+.
+	`addS”vËt
+(
+axisS”vËthŞd”
+, "/services/*");
+
+22 
+roÙ
+.
+	`addS”vËt
+(
+axisS”vËthŞd”
+, "*.jws");
+
+23 
+roÙ
+.
+	`addS”vËt
+(
+axisAdmšS”vËthŞd”
+, "/servlet/AdminServlet");
+
+24 
+_£rv”
+.
+	`¡¬t
+();
+
+27 
+public
+ 
+synchrÚized
+ 
+	$de¡royJ‘ty
+(è
+throws
+ 
+Exû±iÚ
+ {
+
+28 ià(
+_£rv”
+.
+	`isRuÂšg
+()) {
+
+29 
+_£rv”
+.
+	`¡İ
+();
+
+31 
+	}
+}
+
+	@tools/cobertura/examples/basic/src/com/example/simple/Simple.java
+
+23 
+·ckage
+ 
+	gcom
+.
+	gexam¶e
+.
+	gsim¶e
+;
+
+25 
+impÜt
+ 
+	gjava
+.
+	gut
+.
+	gCŞËùiÚ
+;
+
+26 
+impÜt
+ 
+	gjava
+.
+	gut
+.
+	gI‹¿tÜ
+;
+
+28 
+impÜt
+ 
+	gÜg
+.
+	g­ache
+.
+	glog4j
+.
+	gLogg”
+;
+
+30 
+public
+ cÏs 
+	cSim¶e
+
+
+33 
+´iv©e
+ 
+fš®
+ 
+Logg”
+ 
+	mlogg”
+ = Logg”.
+g‘Logg”
+(
+Sim¶e
+.
+şass
+);
+
+35 
+public
+ 
+	$squ¬e
+(
+x
+)
+
+37 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+39 
+logg”
+.
+	`debug
+("x: " + 
+x
+);
+
+42 
+»suÉ
+ = 
+x
+ * x;
+
+44 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+46 
+logg”
+.
+	`debug
+("»suÉ: " + 
+»suÉ
+);
+
+49  
+»suÉ
+;
+
+52 
+public
+ 
+	$f
+(
+x
+)
+
+54 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+56 
+logg”
+.
+	`debug
+("x: " + 
+x
+);
+
+59 ià(
+x
+ < 0)
+
+61 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+63 
+logg”
+.
+	`debug
+("negative x");
+
+66  
+	`squ¬e
+(
+x
+);
+
+68 ià((
+x
+ >= 0) && (x <= 5))
+
+70 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+72 
+logg”
+.
+	`debug
+("0<=x<=5");
+
+75  
+x
+ + 3;
+
+79  2 * 
+x
+;
+
+81 
+	}
+}
+
+83 
+public
+ 
+	$sum
+(
+CŞËùiÚ
+ 
+c
+)
+
+85 
+»suÉ
+ = 0;
+
+87 
+I‹¿tÜ
+ 
+i
+ = 
+c
+.
+	`™”©Ü
+(); i.
+	`hasNext
+();)
+
+89 
+v®ue
+ = ((
+Numb”
+)
+i
+.
+	`Ãxt
+()).
+	`štV®ue
+();
+
+91 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+93 
+logg”
+.
+	`debug
+("v®ue: " + 
+v®ue
+);
+
+96 
+»suÉ
+ +ğ
+v®ue
+;
+
+99 ià(
+logg”
+.
+	`isDebugEÇbËd
+())
+
+101 
+logg”
+.
+	`debug
+("»suÉ: " + 
+»suÉ
+);
+
+104  
+»suÉ
+;
+
+105 
+	}
+}
+
+	@tools/cobertura/examples/basic/src/com/example/simple/SimpleTest.java
+
+23 
+·ckage
+ 
+	gcom
+.
+	gexam¶e
+.
+	gsim¶e
+;
+
+25 
+impÜt
+ 
+	gjava
+.
+	gut
+.
+	gCŞËùiÚ
+;
+
+26 
+impÜt
+ 
+	gjava
+.
+	gut
+.
+	gLškedLi¡
+;
+
+28 
+impÜt
+ 
+	gjun™
+.
+	gäamewÜk
+.
+	gTe¡Ca£
+;
+
+30 
+public
+ cÏs 
+	cSim¶eTe¡
+ 
+ex‹nds
+ 
+	mTe¡Ca£
+
+
+33 
+fš®
+ 
+Sim¶e
+ 
+	msim¶e
+ = 
+Ãw
+ Simple();
+
+35 
+public
+ 
+	$Sim¶eTe¡
+(
+SŒšg
+ 
+nm
+)
+
+37 
+	`su³r
+(
+nm
+);
+
+40 
+public
+ 
+	$‹¡Squ¬e
+()
+
+42 
+	`as£¹Equ®s
+(1, 
+sim¶e
+.
+	`squ¬e
+(1));
+
+43 
+	`as£¹Equ®s
+(1, 
+sim¶e
+.
+	`squ¬e
+(-1));
+
+44 
+	}
+}
+
+46 
+public
+ 
+	$‹¡F
+()
+
+48 
+	`as£¹Equ®s
+(1, 
+sim¶e
+.
+	`f
+(-1));
+
+49 
+	`as£¹Equ®s
+(12, 
+sim¶e
+.
+	`f
+(6));
+
+50 
+	}
+}
+
+52 
+public
+ 
+	$‹¡Sum
+()
+
+54 
+CŞËùiÚ
+ 
+c
+ = 
+Ãw
+ 
+	`LškedLi¡
+();
+
+55 
+c
+.
+	`add
+(
+Ãw
+ 
+	`IÁeg”
+(3));
+
+56 
+c
+.
+	`add
+(
+Ãw
+ 
+	`IÁeg”
+(5));
+
+57 
+c
+.
+	`add
+(
+Ãw
+ 
+	`IÁeg”
+(8));
+
+58 
+	`as£¹Equ®s
+(16, 
+sim¶e
+.
+	`sum
+(
+c
+));
+
+59 
+	}
+}
+
+	@
+1
+.
+1
+/usr/include
+4
+186
+test/src/JettyServer.java
+test/src/JettyUtil.java
+tools/cobertura/examples/basic/src/com/example/simple/Simple.java
+tools/cobertura/examples/basic/src/com/example/simple/SimpleTest.java

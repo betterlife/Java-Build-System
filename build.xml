@@ -1,33 +1,53 @@
 <project default="help" basedir=".">
 
-    <property name="tools" location="tools"/>
-    <property name="findbugs.home"               location="${tools}/findbugs"/>
-    <property name="cobertura.home"              location="${tools}/cobertura-1.9"/>
-    <property name="common.lib.dir"              location="${tools}/lib"/>
+    <property name = "tools"                       location = "tools"/>
+    <property name = "tools.bin"                   location = "${tools}/bin"/>
+    <property name = "tools.tags"                  location = "${tools}/tags"/>
+    <property name = "findbugs.home"               location = "${tools}/findbugs"/>
+    <property name = "cobertura.home"              location = "${tools}/cobertura"/>
+    <property name = "jetty.home"                  location = "${tools}/jetty"/>
+    <property name = "junit.home"                  location = "${tools}/junit"/>
+    <property name = "pmd.home"                    location = "${tools}/pmd"/>
+    <property name = "common.lib.dir"              location = "lib"/>
 
-    <property name="target"                      location="target"/>
+    <property name = "target"                      location = "target"/>
 
-    <property name="build.production.src"        location="src"/>
-    <property name="build.test.src"              location="test/src"/>
-    <property name="build.test.data"             location="test/data"/> 
+    <property name = "build.production.src"        location = "src"/>
+    <property name = "build.test.src"              location = "test/src"/>
+    <property name = "build.test.data"             location = "test/data"/>
 
-    <property name="build.production.classes"    location="${target}/classes/production"/>
-    <property name="build.test.classes"          location="${target}/classes/test"/>
-    <property name="build.test.tmp"              location="${target}/tmp"/>
-    <property name="build.instrument.classes"    location="${target}/classes/instrument"/>
+    <property name = "build.production.classes"    location = "${target}/classes/production"/>
+    <property name = "build.test.classes"          location = "${target}/classes/test"/>
+    <property name = "build.test.tmp"              location = "${target}/tmp"/>
+    <property name = "build.instrument.classes"    location = "${target}/classes/instrument"/>
 
-    <property name="data"                        location="${target}/data"/>
-    <property name="reports.junit.data"          location="${data}/junit"/>
-    <property name="reports.codeCoverage.data"   location="${data}/codeCoverage"/>
-    <property name="reports.findbugs.data"       location="${data}/findbugs"/>
+    <property name = "data"                        location = "${target}/data"/>
+    <property name = "reports.junit.data"          location = "${data}/junit"/>
+    <property name = "reports.codeCoverage.data"   location = "${data}/codeCoverage"/>
+    <property name = "reports.findbugs.data"       location = "${data}/findbugs"/>
+    <property name = "reports.pmd.data"            location = "${data}/pmd"/>
+    <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
+    <property name = "report.pmd.file.name"           value = "report_pmd"/>
 
-    <property name="reports"                     location="${target}/reports"/>
-    <property name="reports.junit.report"        location="${reports}/junit"/>
-    <property name="reports.codeCoverage.report" location="${reports}/codeCoverage"/>
-    <property name="reports.findbugs.report"     location="${reports}/findbugs"/>
+    <property name = "reports"                     location = "${target}/reports"/>
+    <property name = "reports.junit.report"        location = "${reports}/junit"/>
+    <property name = "reports.codeCoverage.report" location = "${reports}/codeCoverage"/>
+    <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
+    <property name = "reports.pmd.report"          location = "${reports}/pmd"/>
 
-    <property name="docs"                        location="${target}/docs"/>
-    <property name="docs.javadoc"                location="${docs}/javadoc"/>
+    <property name = "docs"                        location = "${target}/docs"/>
+    <property name = "docs.javadoc"                location = "${docs}/javadoc"/>
+
+    <property name = "assemble.files.path"         location = "app"/>
+    <property name = "assemble.path"               location = "${target}/assemble"/>
+    <property name = "assemble.path.lib"           location = "${assemble.path}/lib"/>
+    <property name = "assemble.package.name"          value = "cnooc-integration"/>
+    <property name = "assemble.package.version"       value = "0.1"/>
+
+    <property name = "application.server.path"        value = "D:\Emptoris\Sourcing\80117"/>
+    <property name = "application.server.lib.path"    value = "${application.server.path}\lib"/>
+    <property name = "application.deploy.backup"      value = "false"/>
+
 
     <path id="cobertura.classpath">
         <fileset dir="${cobertura.home}">
@@ -38,39 +58,54 @@
 
     <path id="common.classpath">
         <fileset dir="${common.lib.dir}">
-            <include name="*.jar"/> 
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="junit.classpath">
+        <fileset dir="${junit.home}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="jetty.classpath">
+        <fileset dir="${jetty.home}">
+            <include name="*.jar"/>
         </fileset>
     </path>
 
     <path id="findbugs.classpath">
         <fileset dir="${findbugs.home}">
-            <include name="lib/*.jar"/> 
+            <include name="lib/*.jar"/>
         </fileset>
     </path>
 
-    <taskdef 
-        name="findbugs"
-        classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
-        classpathref="findbugs.classpath">
-    </taskdef>
+    <path id="pmd.classpath">
+        <fileset dir="${pmd.home}">
+            <include name="lib/*.jar"/>
+        </fileset>
+    </path>
 
-    <taskdef
-        resource="tasks.properties"
-        classpathref="cobertura.classpath"/>
+    <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugs.classpath"/>
+    <taskdef resource="tasks.properties" classpathref="cobertura.classpath"/>
+    <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
 
     <target name="help">
         <echo>--------------- Usage for this build system -------------</echo>
-        <echo>[ant help] display help information(you are actually doing this now)</echo> 
-        <echo>[ant compile] compile the source code</echo> 
-        <echo>[ant junit:compile] compile test cases</echo> 
+        <echo>[ant help] display help information(you are actually doing this now)</echo>
+        <echo>[ant compile] compile the source code</echo>
+        <echo>[ant junit:compile] compile test cases</echo>
         <echo>[ant junit:run] run test cases</echo>
         <echo>[ant junit:report] generate junit reports</echo>
-        <echo>[ant codeCoverage:instrument] generate code coverage instrument classes</echo>
-        <echo>[ant codeCoverage:report] generate code coverage report</echo>
+        <echo>[ant cc:instrument] generate code coverage instrument classes</echo>
+        <echo>[ant cc:report] generate code coverage report</echo>
         <echo>[ant findbugs] invoke find bugs and generate corresponding report</echo>
         <echo>[ant reportall] generate reports including code coverage, unit test and find bug</echo>
         <echo>[ant docs:javadoc] generate javadoc for the source code</echo>
         <echo>[ant tags] generate ctags and cscope tags for the source code</echo>
+        <echo>[ant run -Dc=xxx] Run class xxx(inlcud full package name)</echo>
+        <echo>[ant assemble] Assemble all necessary files to a deployable package</echo>
+        <echo>[ant deploy] Deploy assembled package to a local application server</echo>
         <echo>[ant clean] clean target files, including generated reports!</echo>
         <echo></echo>
         <echo>Note: Default target is help</echo>
@@ -78,15 +113,31 @@
         <echo>Author: Xiangqian.Liu&lt;smartlitchi@gmail.com&gt;</echo>
         <echo>You may dispatch and modify this build system for free</echo>
     </target>
-    <target name="compile">
+
+    <target name="init">
         <mkdir dir="${build.production.classes}"/>
+        <mkdir dir="${build.instrument.classes}"/>
+        <mkdir dir="${reports.codeCoverage.data}"/>
+        <mkdir dir="${reports.codeCoverage.report}"/>
+        <mkdir dir="${build.test.classes}"/>
+        <mkdir dir="${build.test.tmp}"/>
+        <mkdir dir="${reports.junit.data}"/>
+        <mkdir dir="${reports.junit.report}"/>
+        <mkdir dir="${reports.findbugs.report}"/>
+        <mkdir dir="${reports.pmd.data}"/>
+        <mkdir dir="${reports.pmd.report}"/>
+        <mkdir dir="${docs.javadoc}"/>
+        <mkdir dir="${assemble.path}"/>
+        <mkdir dir="${assemble.path.lib}"/>        
+    </target>
+    <target name="compile" depends="init" description="Compile production source code">
         <javac
             srcdir="${build.production.src}"
             destdir="${build.production.classes}"
-            source="1.4"
+            source="1.5"
             debug="true"
             encoding="UTF-8"
-            target="1.4">
+            target="1.5">
             <include name="**/*.java"/>
             <classpath>
                 <path refid="common.classpath"/>
@@ -94,21 +145,21 @@
         </javac>
     </target>
 
-
-    <target name="codeCoverage:instrument" depends="compile">
-        <mkdir dir="${build.instrument.classes}"/>
-        <mkdir dir="${reports.codeCoverage.data}"/>
-        <cobertura-instrument 
+    <target name="cc:instrument" depends="compile">
+        <copy todir="${build.test.classes}">
+            <fileset dir="${build.test.data}"/>
+        </copy>
+        <cobertura-instrument
             todir="${build.instrument.classes}"
             datafile="${reports.codeCoverage.data}/metadata.ser">
             <fileset dir="${build.production.classes}"/>
         </cobertura-instrument>
     </target>
 
-    <target name="codeCoverage:report" 
-        depends="codeCoverage:instrument, junit:run">
-        <mkdir dir="${reports.codeCoverage.report}"/>
-        <cobertura-report 
+    <target name="cc:report"
+        description="Generate code coverage report"
+        depends="cc:instrument, junit:run">
+        <cobertura-report
             format   = "html"
             datafile = "${reports.codeCoverage.data}/metadata.ser"
             destdir  = "${reports.codeCoverage.report}"
@@ -116,25 +167,27 @@
     </target>
 
     <target name="junit:compile" depends="compile">
-        <mkdir dir="${build.test.classes}"/>
-        <mkdir dir="${build.test.tmp}"/>
         <javac
             srcdir   = "${build.test.src}"
             destdir  = "${build.test.classes}"
             debug    = "true"
-            source   = "1.4"
+            source   = "1.5"
             encoding = "UTF-8"
-            target   = "1.4">
+            target   = "1.5">
             <include name="**/*.java"/>
             <classpath>
                 <pathelement location="${build.production.classes}"/>
                 <path refid="common.classpath"/>
+                <path refid="junit.classpath"/>
+                <path refid="jetty.classpath"/>
             </classpath>
         </javac>
     </target>
 
-    <target name="junit:run" depends="junit:compile">
-        <mkdir dir="${reports.junit.data}"/>
+    <target name="junit:run" depends="junit:compile" description="Run junit test cases and generate report in XML format">
+        <copy todir="${build.test.classes}">
+            <fileset dir="${build.test.data}"/>
+        </copy>
         <!--
         It is important to set fork="true" because of the way Cobertura works. 
         It only flushes its changes to the coverage data file to disk when the 
@@ -142,15 +195,15 @@
         file will be updated AFTER ant exits, but you want to run cobertura-report 
         BEFORE ant exits.
         -->
-        <junit printsummary="false" 
-            forkmode="perBatch" 
+        <junit printsummary="false"
+            forkmode="perBatch"
             fork="true"
             haltonfailure="false">
             <!--
             Specify the name of the coverage data file to use.
             The value specified below is the default.
             -->
-            <sysproperty 
+            <sysproperty
                 key="net.sourceforge.cobertura.datafile"
                 file="${reports.codeCoverage.data}/metadata.ser" />
             <!--
@@ -162,6 +215,8 @@
                 <pathelement location="${build.test.classes}"/>
                 <pathelement location="${build.production.classes}"/>
                 <path        refid="cobertura.classpath"/>
+                <path        refid="junit.classpath"/>
+                <path        refid="jetty.classpath"/>
                 <path        refid="common.classpath"/>
             </classpath>
             <formatter type="xml"/>
@@ -174,8 +229,8 @@
             </batchtest>
         </junit>
     </target>
-    <target name="junit:report" depends="junit:run">
-        <mkdir dir="${reports.junit.report}"/>
+
+    <target name="junit:report" depends="junit:run" description="Run junit test cases and generate HTML report">
         <junitreport todir="${reports.junit.report}">
             <fileset dir="${reports.junit.data}">
                 <include name="TEST-*.xml"/>
@@ -183,33 +238,48 @@
             <report format="frames" todir="${reports.junit.report}"/>
         </junitreport>
     </target>
-    <target name="findbugs" depends="compile">
-        <mkdir dir="${reports.findbugs.report}"/>
 
+    <target name="findbugs" depends="compile" description="Run findbugs and generate HTML report">
         <findbugs home="${findbugs.home}"
             output="html"
             outputFile="${reports.findbugs.report}/index.htm" >
             <systemProperty name = "findbugs.home"
                 value= "${findbugs.home}"/>
-            <sourcePath path="${build.production.src}"/>
-            <class  location="${build.production.classes}"/>
+            <sourcePath path = "${build.production.src}"/>
+            <class  location = "${build.production.classes}"/>
         </findbugs>
     </target>
 
-    <target name="reportall" depends="codeCoverage:report,junit:report,findbugs">
+    <target name="pmd" description="Run pmd scan and generate HTML report">
+        <pmd rulesetfiles="basic,naming,unusedcode,design,imports,junit,strings,braces,codesize,javabeans,coupling,strictexception,controversial"
+             targetjdk      = "1.5"
+             shortFilenames = "false"
+             encoding       = "UTF-8">
+            <formatter type = "xml"
+                     toFile = "${reports.pmd.data}/${report.pmd.file.name}.xml"/>
+            <fileset dir="${build.production.src}">
+                <include name="**/*.java"/>
+            </fileset>
+        </pmd>
+        <xslt 
+            in    = "${reports.pmd.data}/${report.pmd.file.name}.xml"
+            style = "${reports.pmd.config}/pmd-report-per-class.xslt"
+            out   = "${reports.pmd.report}/${report.pmd.file.name}.html"/>
     </target>
 
-    <target name="docs:javadoc">
-        <mkdir dir="${docs.javadoc}"/>
+    <target name="reportall" depends="cc:report,junit:report,findbugs,pmd" description="Run code coverage, junit, findbugs and pmd and generate HTML reports"/>
+
+    <target name="docs:javadoc" description="Generate javadoc">
         <echo>generating java doc</echo>
         <javadoc
-            destdir="${docs.javadoc}"
-            author="true"
-            version="true"
-            use="true"
-            failonerror="false"
-            encoding="UTF8"
-            docencoding="UTF-8">
+            destdir     = "${docs.javadoc}"
+            author      = "true"
+            version     = "true"
+            use         = "true"
+            failonerror = "false"
+            encoding    = "UTF-8"
+            locale      = "en_US"
+            docencoding = "UTF-8">
             <fileset dir="${build.production.src}" defaultexcludes="yes">
                 <include name="**"/>
             </fileset>
@@ -217,8 +287,9 @@
 
     </target>
 
-    <target name="tags">
-        <exec executable="ctags">
+    <target name="tags" description="Generate tag file for ctags and cscope in folder ${tools.tags}">
+        <mkdir dir="${tools.tags}"/>        
+        <exec executable="${tools.bin}/ctags">
             <arg line="--recurse=yes"/>
             <arg line="--links=yes"/>
             <arg line="--java-types=cimp"/>
@@ -227,17 +298,50 @@
             <arg line="./src"/>
             <arg line="./test/src"/>
         </exec>
-        <exec executable="find" output="cscope.files">
+        <exec executable="${tools.bin}/find" output="cscope.files">
             <arg line="."/>
             <arg line="-name"/>
             <arg line="'*.java'"/>
-        </exec>
-        <exec executable="cscope">
+        </exec>                        
+        <exec executable="${tools.bin}/cscope">
             <arg line=" -b -q -i cscope.files"/>
         </exec>
+        <move todir="${tools.tags}" overwrite="true">
+            <fileset dir="${basedir}">
+                <include name="cscope.*"/>
+                <include name="tags"/>
+            </fileset>
+        </move>
     </target>
 
-    <target name="clean">
+    <target name="run" depends="compile" description="Run a specificed class in production source code">
+        <java classname="${c}">
+            <classpath>
+                <pathelement path = "${build.production.classes}"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="assemble" depends="compile" description="Assemble a deployment package in zip format">
+        <copy todir="${assemble.path}">
+            <fileset dir="${assemble.files.path}"/>
+        </copy>
+        <zip destfile="${assemble.path.lib}/${assemble.package.name}_${assemble.package.version}.zip">
+            <fileset dir="${build.production.classes}"/>
+        </zip>
+    </target>
+
+    <target name="deploy" depends="assemble" description="Deploy package generated in target assemble to local application">
+        <tstamp/>
+        <move file="${application.server.lib.path}/${assemble.package.name}_${assemble.package.version}.zip"
+            tofile="${application.server.lib.path}/${assemble.package.name}_${assemble.package.version}.${DSTAMP}${TSTAMP}.zip"
+            overwrite="true"/>
+        <copy todir="${application.server.path}">
+            <fileset dir="${assemble.path}"/>
+        </copy>
+    </target>
+
+    <target name="clean" description="Delete ${target} directory">
         <delete dir="${target}"/>
     </target>
 

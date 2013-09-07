@@ -25,7 +25,7 @@ done
 # Assume findbugs home directory is the parent
 # of the directory containing the script (which should
 # normally be "$findbugs_home/bin").
-dir=`dirname $program`
+dir=`dirname "$program"`
 findbugs_home="$dir/.."
 
 # Handle FHS-compliant installations (e.g., Fink)
@@ -34,7 +34,7 @@ if [ -d "$findbugs_home/share/findbugs" ]; then
 fi
 
 # Make absolute
-findbugs_home=`cd $findbugs_home && /bin/pwd`
+findbugs_home=`cd "$findbugs_home" && pwd`
 
 fb_pathsep=':'
 
@@ -42,6 +42,10 @@ fb_pathsep=':'
 fb_osname=`uname`
 if [ `expr "$fb_osname" : CYGWIN` -ne 0 ]; then
 	findbugs_home=`cygpath --mixed "$findbugs_home"`
+	fb_pathsep=';'
+fi
+# Handle MKS, courtesy of Kelly O'Hair
+if [ "${fb_osname}" = "Windows_NT" ]; then
 	fb_pathsep=';'
 fi
 
@@ -55,16 +59,21 @@ fi
 # Choose default java binary
 fb_javacmd=java
 if [ ! -z "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
-	fb_javacmd="$JAVA_HOME/bin/java"
+	if [ `expr "$fb_osname" : CYGWIN` -ne 0 ]; then
+		fb_javacmd=`cygpath --mixed "$JAVA_HOME"`/bin/java
+	else
+		fb_javacmd="$JAVA_HOME/bin/java"
+	fi
 fi
 
 maxheap=768
 
+fb_appjar="$findbugs_home/lib/findbugs.jar"
+
 ShowHelpAndExit() {
-	fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
 	fb_mainclass="edu.umd.cs.findbugs.ShowHelp"
 	fb_javacmd=${fb_javacmd:-"java"}
-fb_maxheap=${fb_maxheap:-"-Xmx384m"}
+fb_maxheap=${fb_maxheap:-"-Xmx584m"}
 fb_appjar=${fb_appjar:-"$findbugs_home/lib/findbugs.jar"}
 set -f
 #echo command: \
@@ -76,9 +85,9 @@ exec "$fb_javacmd" \
 }
 
 # Set defaults
-fb_appjar="$findbugs_home/lib/findbugsGUI.jar"
 fb_mainclass="edu.umd.cs.findbugs.LaunchAppropriateUI"
 user_jvmargs=''
+ea_arg=''
 debug_arg=''
 conservespace_arg=''
 workhard_arg=''
@@ -96,13 +105,16 @@ while [ $# -gt 0 ]; do
 		;;
 
 	-textui)
-		fb_appjar="$findbugs_home/lib/findbugs.jar"
 		fb_mainclass="edu.umd.cs.findbugs.FindBugs2"
 		;;
 
 	-jvmArgs)
 		shift
 		user_jvmargs="$1"
+		;;
+		
+	-ea)
+		ea_arg='-ea'
 		;;
 
 	-maxHeap)
@@ -139,7 +151,7 @@ while [ $# -gt 0 ]; do
 			shift
 		done
 		fb_javacmd=${fb_javacmd:-"java"}
-fb_maxheap=${fb_maxheap:-"-Xmx384m"}
+fb_maxheap=${fb_maxheap:-"-Xmx584m"}
 fb_appjar=${fb_appjar:-"$findbugs_home/lib/findbugs.jar"}
 set -f
 #echo command: \
@@ -164,7 +176,7 @@ exec "$fb_javacmd" \
 	shift
 done
 
-fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props"
+fb_jvmargs="$user_jvmargs $debug_arg $conservespace_arg $workhard_arg $user_props $ea_arg"
 fb_maxheap="-Xmx${maxheap}m"
 
 # Extra JVM args for MacOSX.
@@ -175,7 +187,7 @@ if [ $fb_osname = "Darwin" ]; then
 fi
 
 fb_javacmd=${fb_javacmd:-"java"}
-fb_maxheap=${fb_maxheap:-"-Xmx384m"}
+fb_maxheap=${fb_maxheap:-"-Xmx584m"}
 fb_appjar=${fb_appjar:-"$findbugs_home/lib/findbugs.jar"}
 set -f
 #echo command: \
