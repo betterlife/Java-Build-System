@@ -1,4 +1,4 @@
-<project default="help" basedir=".">
+<project default="compile" basedir=".">
 
     <!-- Package name, will be used when generating the zip file --> 
     <property name = "assemble.package.name"          value = "yum-workflow-integration"/>
