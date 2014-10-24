@@ -244,10 +244,11 @@
         file will be updated AFTER ant exits, but you want to run cobertura-report 
         BEFORE ant exits.
         -->
-        <junit printsummary      = "false"
+        <junit printsummary      = "true"
                    forkmode      = "perBatch"
                    fork          = "true"
-                   haltonfailure = "false">
+                   haltonfailure = "false"
+                   maxmemory     = "2048M">
             <!--
             Specify the name of the coverage data file to use.
             The value specified below is the default.
@@ -276,6 +277,28 @@
                     <exclude name = "**/AllTests.class"/>
                 </fileset>
             </batchtest>
+        </junit>
+    </target>
+
+    <target name="junit:test" depends="junit:compile" description="Run a specify test(-Dtest=xxx)">
+        <property name="test" value="${test}"/>
+        <junit printsummary  = "false"
+               forkmode      = "preBatch"
+               fork          = "true"
+               haltonfailure = "false"
+               maxmemory     = "256M">
+            <classpath>
+                <pathelement location = "${build.instrument.classes}"/>
+                <pathelement location = "${build.test.classes}"/>
+                <pathelement location = "${build.production.classes}"/>
+                <path           refid = "cobertura.classpath"/>
+                <path           refid = "junit.classpath"/>
+                <path           refid = "jetty.classpath"/>
+                <path           refid = "common.classpath"/>
+            </classpath>
+            <formatter type="xml"/>
+            <formatter type="brief" usefile="false"/>
+            <test name="${test}"/>
         </junit>
     </target>
 
