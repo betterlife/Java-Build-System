@@ -1,24 +1,21 @@
-<project default="compile" basedir=".">
+<project default="help" basedir=".">
 
     <!-- Package name, will be used when generating the zip file --> 
-    <property name = "assemble.package.name"          value = "yum-workflow-integration"/>
-    <!-- Version of the package, will be used when generating the zip file-->
+    <property name = "assemble.package.name"          value = "betterlife"/>
+    <property name = "assemble.package.suffix"        value = "war"/>
+    
+    <!-- Version of the package, will be used when generating the deployment package file-->
     <property name = "assemble.package.version"       value = "0.1"/>
 
-    <!-- Your sourcing application installation directory-->
-    <property name = "application.server.path"        value = "D:/Dev/sourcing/8_0_1_5_98/"/>
-
-    <!-- Your sourcing application log directory, used to backup old logs-->
-    <property name = "application.server.log.file"    value = "${application.server.path}/log/epass/MyServer/MyServer_out.log"/>
-
-    <!-- Sourcing application windows service name -->
-    <property name = "application.service.name"       value = "Sourcing"/>
+    <!-- Your application installation directory-->
+    <property name = "application.server.path"        value = "/opt/IBM/wlp/usr/server/server1"/>
 
     <!-- File to be exclued when compiling -->
-    <property name = "build.production.src.exclude"   value = "InternalUserIPCheckPostProcessor.java"/>    
-
-    <!-- Whether to backup zip file and the bat file when deploying-->
-    <property name = "application.deploy.backup"      value = "false"/>
+    <property name = "build.production.src.exclude"   value = "xxx.java"/>    
+    
+    <property name = "build.debug.level"              value = "source,lines,vars" />
+    <property name = "build.target.level"             value = "1.7"/>
+    <property name = "build.source.level"             value = "1.7"/>
 
     <property name = "application.server.lib.path"    value = "${application.server.path}/lib"/>
     <property name = "tools"                       location = "tools"/>
@@ -35,12 +32,15 @@
     <property name = "build.production.src"        location = "work/src"/>
     <property name = "build.test.src"              location = "work/test/src"/>
     <property name = "build.test.data"             location = "work/test/data"/>
+    <property name = "build.webcontent.path"       location = "work/WebContent"/>    
 
+    <!-- Classes folder -->
     <property name = "build.production.classes"    location = "${target}/classes/production"/>
     <property name = "build.test.classes"          location = "${target}/classes/test"/>
     <property name = "build.test.tmp"              location = "${target}/tmp"/>
     <property name = "build.instrument.classes"    location = "${target}/classes/instrument"/>
 
+    <!-- Top data folder -->
     <property name = "data"                        location = "${target}/data"/>
     <property name = "reports.junit.data"          location = "${data}/junit"/>
     <property name = "reports.codeCoverage.data"   location = "${data}/codeCoverage"/>
@@ -49,19 +49,23 @@
     <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
     <property name = "report.pmd.file.name"           value = "report_pmd"/>
 
+   <!-- Top report folder -->
     <property name = "reports"                     location = "${target}/reports"/>
     <property name = "reports.junit.report"        location = "${reports}/junit"/>
     <property name = "reports.codeCoverage.report" location = "${reports}/codeCoverage"/>
     <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
     <property name = "reports.pmd.report"          location = "${reports}/pmd"/>
 
+    <!-- Docs folder -->
     <property name = "docs"                        location = "${target}/docs"/>
     <property name = "docs.javadoc"                location = "${docs}/javadoc"/>
 
-    <property name = "assemble.files.path"         location = "work/app"/>
-    <property name = "assemble.path"               location = "${target}/assemble"/>
-    <property name = "assemble.path.lib"           location = "${assemble.path}/lib"/>
+    <!-- Artifacts folder -->
+    <property name = "artifact.path"               location = "${target}/artifact"/>
+    <property name = "artifact.package.path"       location = "${artifact.path}/package"/>
+    <property name = "artifact.flat.path"          location = "${artifact.path}/flat"/>
 
+   
     <path id="cobertura.classpath">
         <fileset dir="${cobertura.home}">
             <include name="cobertura.jar" />
@@ -114,7 +118,7 @@
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
     <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.classpath"/>
 
-    <target name="help">
+    <target name="help" description="Show help content">
         <echo>--------------- Usage for this build system -------------</echo>
         <echo>[ant help] display help information(you are actually doing this now)</echo>
         <echo>[ant compile] compile the source code</echo>
@@ -128,10 +132,11 @@
         <echo>[ant docs:javadoc] generate javadoc for the source code</echo>
         <echo>[ant tags] generate ctags and cscope tags for the source code</echo>
         <echo>[ant run -Dc=xxx] Run class xxx(inlcud full package name)</echo>
-        <echo>[ant assemble] Assemble all necessary files to a deployable package</echo>
-        <echo>[ant deploy] Deploy assembled package to a local application server</echo>
+        <echo>[ant package.flat] generate flat files ready for packageing</echo>
+        <echo>[ant package.war] generate a war package ready for deploy</echo>
+        <echo>[ant deploy] Deploy packaged war file to a local application server</echo>
         <echo>[ant clean] clean target files, including generated reports!</echo>
-        <echo></echo>
+        <echo/>
         <echo>Note: Default target is help</echo>
         <echo>----------------------- End of usage ---------------------</echo>
         <echo>Author: Xiangqian.Liu&lt;smartlitchi@gmail.com&gt;</echo>
@@ -151,19 +156,21 @@
         <mkdir dir="${reports.pmd.data}"/>
         <mkdir dir="${reports.pmd.report}"/>
         <mkdir dir="${docs.javadoc}"/>
-        <mkdir dir="${assemble.path}"/>
-        <mkdir dir="${assemble.path.lib}"/>        
+        <mkdir dir="${artifact.package.path}"/>
+        <mkdir dir="${artifact.flat.path}"/>        
     </target>
-    <target name="compile" depends="init">
+
+    <target name="compile" depends="init" description="Compile source code">
       <javac
-          srcdir            ="${build.production.src}"
-          destdir           ="${build.production.classes}"
-          source            ="1.5"
-          debug             ="true"
-          includeantruntime ="false"
-          encoding          ="UTF-8"
+          srcdir            = "${build.production.src}"
+          destdir           = "${build.production.classes}"
+          source            = "${build.source.level}"
+          debug             = "true"
+          debuglevel        = "${build.debug.level}"
+          includeantruntime = "false"
+          encoding          = "UTF-8"
           fork              = "true"
-          target            ="1.5">
+          target            = "${build.target.level}">
         <compilerarg value="-J-Duser.language=en"/>
         <include name="**/*.java"/>
         <exclude name="**/${build.production.src.exclude}"/>
@@ -180,14 +187,14 @@
             </fileset>
         </copy>
         <cobertura-instrument
-            todir="${build.instrument.classes}"
-            datafile="${reports.codeCoverage.data}/metadata.ser">
-            <fileset dir="${build.production.classes}"/>
+            todir    = "${build.instrument.classes}"
+            datafile = "${reports.codeCoverage.data}/metadata.ser">
+            <fileset dir = "${build.production.classes}"/>
         </cobertura-instrument>
     </target>
 
-    <target name="cc:report"
-        depends="cc:instrument, junit:run">
+    <target name="cc:report" depends="cc:instrument, junit:run"
+            description="Generate unit test code coverage report">
         <cobertura-report
             format   = "html"
             datafile = "${reports.codeCoverage.data}/metadata.ser"
@@ -195,28 +202,31 @@
             srcdir   = "${build.production.src}"/>
     </target>
 
-    <target name="junit:compile" depends="compile">
+    <target name="junit:compile" depends="compile"
+            description="Compile unit test source code">
         <javac
             srcdir            = "${build.test.src}"
             destdir           = "${build.test.classes}"
+            source            = "${build.source.level}"
             debug             = "true"
-            includeantruntime ="false"
-            encoding          ="UTF-8"
+            debuglevel        = "${build.debug.level}"
+            includeantruntime = "false"
+            encoding          = "UTF-8"
             fork              = "true"
-            source            = "1.5"
-            target            = "1.5">
+            target            = "${build.target.level}">
             <compilerarg value="-J-Duser.language=en"/>
             <include name="**/*.java"/>
             <classpath>
-                <pathelement location="${build.production.classes}"/>
-                <path refid="common.classpath"/>
-                <path refid="junit.classpath"/>
-                <path refid="jetty.classpath"/>
+                <pathelement location = "${build.production.classes}"/>
+                <path           refid = "common.classpath"/>
+                <path           refid = "junit.classpath"/>
+                <path           refid = "jetty.classpath"/>
             </classpath>
         </javac>
     </target>
 
-    <target name="junit:run" depends="junit:compile">
+    <target name="junit:run" depends="junit:compile"
+            description="Run unit tests">
         <tstamp/>
         <copy todir="${build.test.classes}">
             <fileset dir="${build.test.data}">
@@ -234,42 +244,43 @@
         file will be updated AFTER ant exits, but you want to run cobertura-report 
         BEFORE ant exits.
         -->
-        <junit printsummary="false"
-            forkmode="perBatch"
-            fork="true"
-            haltonfailure="false">
+        <junit printsummary      = "false"
+                   forkmode      = "perBatch"
+                   fork          = "true"
+                   haltonfailure = "false">
             <!--
             Specify the name of the coverage data file to use.
             The value specified below is the default.
             -->
             <sysproperty
-                key="net.sourceforge.cobertura.datafile"
-                file="${reports.codeCoverage.data}/metadata.ser" />
+                key  = "net.sourceforge.cobertura.datafile"
+                file = "${reports.codeCoverage.data}/metadata.ser" />
             <!--
             Note the classpath order: instrumented classes are before the
             original (uninstrumented) classes. This is important.
             -->
             <classpath>
-                <pathelement location="${build.instrument.classes}"/>
-                <pathelement location="${build.test.classes}"/>
-                <pathelement location="${build.production.classes}"/>
-                <path        refid="cobertura.classpath"/>
-                <path        refid="junit.classpath"/>
-                <path        refid="jetty.classpath"/>
-                <path        refid="common.classpath"/>
+                <pathelement location = "${build.instrument.classes}"/>
+                <pathelement location = "${build.test.classes}"/>
+                <pathelement location = "${build.production.classes}"/>
+                <path           refid = "cobertura.classpath"/>
+                <path           refid = "junit.classpath"/>
+                <path           refid = "jetty.classpath"/>
+                <path           refid = "common.classpath"/>
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
             <batchtest fork="yes"   todir="${reports.junit.data}">
                 <fileset dir="${build.test.classes}">
-                    <include name="**/*Test*.class"/>
-                    <exclude name="**/AllTests.class"/>
+                    <include name = "**/*Test*.class"/>
+                    <exclude name = "**/AllTests.class"/>
                 </fileset>
             </batchtest>
         </junit>
     </target>
 
-    <target name="junit:report" depends="junit:run">
+    <target name="junit:report" depends="junit:run"
+            description="Generate unit test report in xml and html format">
         <junitreport todir="${reports.junit.report}">
             <fileset dir="${reports.junit.data}">
                 <include name="TEST-*.xml"/>
@@ -278,20 +289,21 @@
         </junitreport>
     </target>
 
-    <target name="findbugs" depends="compile">
+    <target name="findbugs" depends="compile"
+            description="Generate findbugs report">
         <findbugs home="${findbugs.home}"
             output="html"
             outputFile="${reports.findbugs.report}/index.htm" >
             <systemProperty name = "findbugs.home"
-                value= "${findbugs.home}"/>
+                           value = "${findbugs.home}"/>
             <sourcePath path = "${build.production.src}"/>
             <class  location = "${build.production.classes}"/>
         </findbugs>
     </target>
 
-    <target name="pmd">
-        <pmd rulesetfiles="basic,naming,unusedcode,design,imports,junit,strings,braces,codesize,javabeans,coupling,strictexception,controversial"
-             targetjdk      = "1.5"
+    <target name="pmd" description="Generate PMD report">
+        <pmd rulesetfiles = "basic, naming, unusedcode, design, imports, junit, strings, braces, codesize, javabeans, coupling, strictexception, controversial"            
+             targetjdk      = "${build.source.level}"
              shortFilenames = "false"
              encoding       = "UTF-8">
             <formatter type = "xml"
@@ -306,9 +318,10 @@
             out   = "${reports.pmd.report}/${report.pmd.file.name}.html"/>
     </target>
 
-    <target name="reportall" depends="cc:report,junit:report,findbugs,pmd"/>
+    <target name="reportall" depends="cc:report,junit:report,findbugs,pmd"
+            description="Generate code coverage, unit test, findbugs and PMD report"/>
 
-    <target name="docs:javadoc">
+    <target name="docs:javadoc" description="Generate java doc">
         <echo>Generating java doc</echo>
         <javadoc
             destdir     = "${docs.javadoc}"
@@ -326,7 +339,7 @@
 
     </target>
 
-    <target name="tags">
+    <target name="tags" description="Generate tag file for ctags and cscope">
         <exec executable="ctags">
             <arg line="--recurse=yes"/>
             <arg line="--links=yes"/>
@@ -346,7 +359,7 @@
         </exec>
     </target>
 
-    <target name="run" depends="compile">
+    <target name="run" depends="compile" description="Run class, full class name(xxx) passed by parameter c(-Dc=xxx)">
         <java classname="${c}">
             <classpath>
                 <pathelement path = "${build.production.classes}"/>
@@ -354,18 +367,26 @@
         </java>
     </target>
 
-    <target name="assemble" depends="compile">
-        <copy todir="${assemble.path}">
-            <fileset dir="${assemble.files.path}">
+    <target name="package.flat" depends="compile">
+        <copy todir="${artifact.flat.path}">
+            <fileset dir="${build.webcontent.path}">
                 <exclude name="**/*/*swp*"/>
+                <exclude name="**/*/*.bak"/>
             </fileset>
         </copy>
-        <zip destfile="${assemble.path.lib}/${assemble.package.name}_${assemble.package.version}.zip">
+        <copy todir="${artifact.flat.path}/WEB-INF/classes">
             <fileset dir="${build.production.classes}"/>
+        </copy>
+    </target>
+    
+    <target name="package.war" depends="package.flat" description="Generate war package for web app">
+        <zip destfile="${artifact.package.path}/${assemble.package.name}_${assemble.package.version}.${assemble.package.suffix}">
+            <fileset dir="${artifact.flat.path}"/>
         </zip>
     </target>
 
-    <target name="startapp"> 
+    <target name="startapp">
+        <!-- Not implemented-->
         <exec executable="net" vmlauncher="false"> 
             <arg value="start"/> 
             <arg value="${application.service.name}"/> 
@@ -373,6 +394,7 @@
     </target> 
 
     <target name="stopapp"> 
+        <!-- Not implemented-->       
         <exec executable="net" vmlauncher="false"> 
             <arg value="stop"/> 
             <arg value="${application.service.name}"/> 
@@ -380,47 +402,7 @@
         <sleep seconds="10"/>
     </target> 
 
-    <target name="deploy" depends="assemble">
-        <!--<antcall target="stopapp"/>-->
-        <tstamp/>
-        <property name = "filename" value = "${assemble.package.name}_${assemble.package.version}.zip"/>
-        <if>
-            <equals arg1="${application.deploy.backup}" arg2="true" />
-            <then>
-                <if>
-                    <available file = "${application.server.lib.path}/${filename}"/>
-                    <then>
-                        <move  file = "${application.server.lib.path}/${filename}"
-                             tofile = "${application.server.lib.path}/${assemble.package.name}_${assemble.package.version}.${DSTAMP}${TSTAMP}.zip"
-                          overwrite = "true"/>  
-                    </then>
-                </if>  
-                <move     file = "${application.server.path}/Script/wls_920.bat"
-                        tofile = "${application.server.path}/Script/wls_920.${DSTAMP}${TSTAMP}.bat"
-                     overwrite = "true"/>  
-                <move     file = "${application.server.log.file}"
-                        tofile = "${application.server.log.file}.${DSTAMP}${TSTAMP}.log"
-                     overwrite = "true"/>
-            </then>
-            <else>
-                <delete file = "${application.server.log.file}"/>
-            </else>
-        </if>
-        <copy todir="${application.server.path}">
-            <fileset dir="${assemble.path}">
-                <exclude name="**/*/*swp*"/>
-            </fileset>
-        </copy>
-        <replace file  = "${application.server.path}/Script/wls_920.bat.merge.sample" 
-                 token = "$$PACKAGE_NAME_VERSION.EXT$$" 
-                 value = "${filename}"/>
-        <move     file = "${application.server.path}/Script/wls_920.bat.merge.sample"
-                tofile = "${application.server.path}/Script/wls_920.bat"
-             overwrite = "true"/>  
-        <!--<antcall target="startapp"/>-->
-    </target>
-
-    <target name="clean">
+    <target name="clean" description="Clean everything in target folder">
         <delete dir="${target}"/>
     </target>
 
