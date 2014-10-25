@@ -1,23 +1,5 @@
 <project default="help" basedir=".">
 
-    <!-- Package name, will be used when generating the zip file --> 
-    <property name = "assemble.package.name"          value = "betterlife"/>
-    <property name = "assemble.package.suffix"        value = "war"/>
-    
-    <!-- Version of the package, will be used when generating the deployment package file-->
-    <property name = "assemble.package.version"       value = "0.1"/>
-
-    <!-- Your application installation directory-->
-    <property name = "application.server.path"        value = "/opt/IBM/wlp/usr/server/server1"/>
-
-    <!-- File to be exclued when compiling -->
-    <property name = "build.production.src.exclude"   value = "xxx.java"/>    
-    
-    <property name = "build.debug.level"              value = "source,lines,vars" />
-    <property name = "build.target.level"             value = "1.7"/>
-    <property name = "build.source.level"             value = "1.7"/>
-
-    <property name = "application.server.lib.path"    value = "${application.server.path}/lib"/>
     <property name = "tools"                       location = "tools"/>
     <property name = "findbugs.home"               location = "${tools}/findbugs"/>
     <property name = "cobertura.home"              location = "${tools}/cobertura"/>
@@ -29,10 +11,14 @@
 
     <property name = "target"                      location = "target"/>
 
-    <property name = "build.production.src"        location = "work/src"/>
-    <property name = "build.test.src"              location = "work/test/src"/>
-    <property name = "build.test.data"             location = "work/test/data"/>
-    <property name = "build.webcontent.path"       location = "work/WebContent"/>    
+    <property name = "work"                        location = "work"/>
+
+    <property file = "${work}/build.properties"/>
+
+    <property name = "build.production.src"        location = "${work}/src"/>
+    <property name = "build.test.src"              location = "${work}/test/src"/>
+    <property name = "build.test.data"             location = "${work}/test/data"/>
+    <property name = "build.webcontent.path"       location = "${work}/WebContent"/>
 
     <!-- Classes folder -->
     <property name = "build.production.classes"    location = "${target}/classes/production"/>
@@ -132,8 +118,8 @@
         <echo>[ant docs:javadoc] generate javadoc for the source code</echo>
         <echo>[ant tags] generate ctags and cscope tags for the source code</echo>
         <echo>[ant run -Dc=xxx] Run class xxx(inlcud full package name)</echo>
-        <echo>[ant package.flat] generate flat files ready for packageing</echo>
-        <echo>[ant package.war] generate a war package ready for deploy</echo>
+        <echo>[ant build:flat] generate flat files ready for packageing</echo>
+        <echo>[ant build:war] generate a war package ready for deploy</echo>
         <echo>[ant deploy] Deploy packaged war file to a local application server</echo>
         <echo>[ant clean] clean target files, including generated reports!</echo>
         <echo/>
@@ -283,7 +269,7 @@
     <target name="junit:test" depends="junit:compile" description="Run a specify test(-Dtest=xxx)">
         <property name="test" value="${test}"/>
         <junit printsummary  = "false"
-               forkmode      = "preBatch"
+               forkmode      = "perBatch"
                fork          = "true"
                haltonfailure = "false"
                maxmemory     = "256M">
@@ -298,7 +284,7 @@
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
-            <test name="${test}"/>
+            <test name="${test}" todir="${reports.junit.data}"/>
         </junit>
     </target>
 
@@ -390,7 +376,7 @@
         </java>
     </target>
 
-    <target name="package.flat" depends="compile">
+    <target name="build:flat" depends="compile">
         <copy todir="${artifact.flat.path}">
             <fileset dir="${build.webcontent.path}">
                 <exclude name="**/*/*swp*"/>
@@ -402,7 +388,7 @@
         </copy>
     </target>
     
-    <target name="package.war" depends="package.flat" description="Generate war package for web app">
+    <target name="build:war" depends="build:flat" description="Generate war package for web app">
         <zip destfile="${artifact.package.path}/${assemble.package.name}_${assemble.package.version}.${assemble.package.suffix}">
             <fileset dir="${artifact.flat.path}"/>
         </zip>
