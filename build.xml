@@ -17,6 +17,7 @@
     <property name = "build.test.src"              location = "${work}/test/src"/>
     <property name = "build.test.data"             location = "${work}/test/data"/>
     <property name = "build.webcontent.path"       location = "${work}/WebContent"/>
+    <property name = "build.webcontent.path.lib"   location = "${work}/WebContent/WEB-INF/lib"/>
 
     <!-- Classes folder -->
     <property name = "build.production.classes"    location = "${target}/classes/production"/>
@@ -91,6 +92,12 @@
         </fileset>
     </path>
 
+    <path id="runtime.classpath">
+        <fileset dir="${build.webcontent.path.lib}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugs.classpath"/>
     <taskdef resource="tasks.properties" classpathref="cobertura.classpath"/>
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
@@ -153,7 +160,8 @@
         <include name="**/*.java"/>
         <exclude name="**/${build.production.src.exclude}"/>
         <classpath>
-          <path refid="common.classpath"/>
+          <path refid = "common.classpath"/>
+          <path refid = "runtime.classpath"/>
         </classpath>
       </javac>
     </target>
@@ -198,6 +206,7 @@
                 <pathelement location = "${build.production.classes}"/>
                 <path           refid = "common.classpath"/>
                 <path           refid = "junit.classpath"/>
+                <path           refid = "runtime.classpath"/>
             </classpath>
         </javac>
     </target>
@@ -244,6 +253,7 @@
                 <path           refid = "cobertura.classpath"/>
                 <path           refid = "junit.classpath"/>
                 <path           refid = "common.classpath"/>
+                <path           refid = "runtime.classpath"/>
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
@@ -270,6 +280,7 @@
                 <path           refid = "cobertura.classpath"/>
                 <path           refid = "junit.classpath"/>
                 <path           refid = "common.classpath"/>
+                <path           refid = "runtime.classpath"/>
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
