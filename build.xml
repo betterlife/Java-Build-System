@@ -34,8 +34,13 @@
     <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
     <property name = "report.pmd.file.name"           value = "report_pmd"/>
 
-   <!-- Top report folder -->
-    <property name = "reports"                     location = "${target}/reports"/>
+    <!-- Artifacts folder -->
+    <property name = "artifact.path"               location = "${target}/artifact"/>
+    <property name = "artifact.package.path"       location = "${artifact.path}/package"/>
+    <property name = "artifact.flat.path"          location = "${artifact.path}/flat"/>
+
+    <!-- Top report folder -->
+    <property name = "reports"                     location = "${artifact.path}/reports"/>
     <property name = "reports.junit.report"        location = "${reports}/junit"/>
     <property name = "reports.codeCoverage.report" location = "${reports}/codeCoverage"/>
     <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
@@ -45,12 +50,11 @@
     <property name = "docs"                        location = "${target}/docs"/>
     <property name = "docs.javadoc"                location = "${docs}/javadoc"/>
 
-    <!-- Artifacts folder -->
-    <property name = "artifact.path"               location = "${target}/artifact"/>
-    <property name = "artifact.package.path"       location = "${artifact.path}/package"/>
-    <property name = "artifact.flat.path"          location = "${artifact.path}/flat"/>
 
-   
+    <!-- Manifest.yml file -->
+    <property name = "manifest.file.path"          location = "${work}"/>
+    <property name = "manifest.file.name"             value = "manifest.yml"/>
+
     <path id="cobertura.classpath">
         <fileset dir="${cobertura.home}">
             <include name="cobertura.jar" />
@@ -391,6 +395,11 @@
         <zip destfile="${artifact.package.path}/${assemble.package.name}_${assemble.package.version}.${assemble.package.suffix}">
             <fileset dir="${artifact.flat.path}"/>
         </zip>
+        <copy todir="${artifact.package.path}">
+            <fileset dir="${manifest.file.path}">
+                <include name="${manifest.file.name}"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="startapp">
