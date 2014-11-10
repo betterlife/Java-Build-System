@@ -58,6 +58,7 @@
     <!-- Liberty scripts -->
     <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/server"/>
     <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/server"/>
+    <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/server"/>
 
     <path id="cobertura.classpath">
         <fileset dir="${cobertura.home}">
@@ -407,19 +408,30 @@
     </target>
 
     <target name="server.start" description="Start Application server">
-        <!-- Not implemented-->
-        <exec executable="bash" vmlauncher="false">
-            <arg value="${application.server.start.cmd}"/>
-            <arg value="start"/>
-            <arg value="${application.server.name}"/>
-        </exec> 
-    </target> 
+        <antcall target="_server.internal.cmd">
+            <param name="cmd" value="${application.server.start.cmd}"/>
+            <param name="cmd.param" value="start"/>
+        </antcall>
+    </target>
 
-    <target name="server.stop">
-        <!-- Not implemented-->       
-        <exec executable="bash" vmlauncher="false" description="Stop Application server">
-            <arg value="${application.server.stop.cmd}"/>
-            <arg value="stop"/>
+    <target name="server.stop" description="Stop Application server">
+        <antcall target="_server.internal.cmd">
+            <param name="cmd" value="${application.server.stop.cmd}"/>
+            <param name="cmd.param" value="stop"/>
+        </antcall>
+    </target>
+
+    <target name="server.status" description="Show Application server status">
+        <antcall target="_server.internal.cmd">
+            <param name="cmd" value="${application.server.status.cmd}"/>
+            <param name="cmd.param" value="status"/>
+        </antcall>
+    </target>
+
+    <target name="_server.internal.cmd">
+        <exec executable="bash" vmlauncher="false">
+            <arg value="${cmd}"/>
+            <arg value="${cmd.param}"/>
             <arg value="${application.server.name}"/>
         </exec>
     </target>
