@@ -407,7 +407,7 @@
         </copy>
     </target>
 
-    <target name="server.start" description="Start Application server">
+    <target name="server.start" depends="build.war" description="Start Application server">
         <antcall target="_server.internal.cmd">
             <param name="cmd" value="${application.server.start.cmd}"/>
             <param name="cmd.param" value="start"/>
@@ -436,7 +436,7 @@
         </exec>
     </target>
 
-    <target name="server.restart" depends="build.war">
+    <target name="server.restart" description="Restart Application Server">
         <antcall target="server.stop"/>
         <antcall target="server.start"/>
     </target>
