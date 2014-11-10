@@ -55,6 +55,10 @@
     <property name = "manifest.file.path"          location = "${work}"/>
     <property name = "manifest.file.name"             value = "manifest.yml"/>
 
+    <!-- Liberty scripts -->
+    <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/server"/>
+    <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/server"/>
+
     <path id="cobertura.classpath">
         <fileset dir="${cobertura.home}">
             <include name="cobertura.jar" />
@@ -111,18 +115,18 @@
         <echo>--------------- Usage for this build system -------------</echo>
         <echo>[ant help] display help information(you are actually doing this now)</echo>
         <echo>[ant compile] compile the source code</echo>
-        <echo>[ant junit:compile] compile test cases</echo>
-        <echo>[ant junit:run] run test cases</echo>
-        <echo>[ant junit:report] generate junit reports</echo>
-        <echo>[ant cc:instrument] generate code coverage instrument classes</echo>
-        <echo>[ant cc:report] generate code coverage report</echo>
+        <echo>[ant junit.compile] compile test cases</echo>
+        <echo>[ant junit.run] run test cases</echo>
+        <echo>[ant junit.report] generate junit reports</echo>
+        <echo>[ant cc.instrument] generate code coverage instrument classes</echo>
+        <echo>[ant cc.report] generate code coverage report</echo>
         <echo>[ant findbugs] invoke find bugs and generate corresponding report</echo>
         <echo>[ant reportall] generate reports including code coverage, unit test and find bug</echo>
-        <echo>[ant docs:javadoc] generate javadoc for the source code</echo>
+        <echo>[ant docs.javadoc] generate javadoc for the source code</echo>
         <echo>[ant tags] generate ctags and cscope tags for the source code</echo>
         <echo>[ant run -Dc=xxx] Run class xxx(inlcud full package name)</echo>
-        <echo>[ant build:flat] generate flat files ready for packageing</echo>
-        <echo>[ant build:war] generate a war package ready for deploy</echo>
+        <echo>[ant build.flat] generate flat files ready for packageing</echo>
+        <echo>[ant build.war] generate a war package ready for deploy</echo>
         <echo>[ant deploy] Deploy packaged war file to a local application server</echo>
         <echo>[ant clean] clean target files, including generated reports!</echo>
         <echo/>
@@ -170,7 +174,7 @@
       </javac>
     </target>
 
-    <target name="cc:instrument" depends="compile">
+    <target name="cc.instrument" depends="compile">
         <copy todir="${build.test.classes}">
             <fileset dir="${build.test.data}">
                 <exclude name="**/*/*swp*"/>
@@ -183,7 +187,7 @@
         </cobertura-instrument>
     </target>
 
-    <target name="cc:report" depends="cc:instrument, junit:run"
+    <target name="cc.report" depends="cc.instrument, junit.run"
             description="Generate unit test code coverage report">
         <cobertura-report
             format   = "html"
@@ -192,7 +196,7 @@
             srcdir   = "${build.production.src}"/>
     </target>
 
-    <target name="junit:compile" depends="compile"
+    <target name="junit.compile" depends="compile"
             description="Compile unit test source code">
         <javac
             srcdir            = "${build.test.src}"
@@ -215,7 +219,7 @@
         </javac>
     </target>
 
-    <target name="junit:run" depends="junit:compile"
+    <target name="junit.run" depends="junit.compile"
             description="Run unit tests">
         <tstamp/>
         <copy todir="${build.test.classes}">
@@ -270,7 +274,7 @@
         </junit>
     </target>
 
-    <target name="junit:test" depends="junit:compile" description="Run a specify test(-Dtest=xxx)">
+    <target name="junit.test" depends="junit.compile" description="Run a specify test(-Dtest=xxx)">
         <property name="test" value="${test}"/>
         <junit printsummary  = "false"
                forkmode      = "perBatch"
@@ -292,7 +296,7 @@
         </junit>
     </target>
 
-    <target name="junit:report" depends="junit:run"
+    <target name="junit.report" depends="junit.run"
             description="Generate unit test report in xml and html format">
         <junitreport todir="${reports.junit.report}">
             <fileset dir="${reports.junit.data}">
@@ -330,7 +334,7 @@
         </pmd>
     </target>
 
-    <target name="reportall" depends="cc:report,junit:report,findbugs,pmd"
+    <target name="reportall" depends="cc.report,junit.report,findbugs,pmd"
             description="Generate code coverage, unit test, findbugs and PMD report"/>
 
     <target name="docs:javadoc" description="Generate java doc">
@@ -379,7 +383,7 @@
         </java>
     </target>
 
-    <target name="build:flat" depends="compile">
+    <target name="build.flat" depends="compile">
         <copy todir="${artifact.flat.path}">
             <fileset dir="${build.webcontent.path}">
                 <exclude name="**/*/*swp*"/>
@@ -391,7 +395,7 @@
         </copy>
     </target>
     
-    <target name="build:war" depends="build:flat" description="Generate war package for web app">
+    <target name="build.war" depends="build.flat" description="Generate war package for web app">
         <zip destfile="${artifact.package.path}/${assemble.package.name}_${assemble.package.version}.${assemble.package.suffix}">
             <fileset dir="${artifact.flat.path}"/>
         </zip>
@@ -402,22 +406,28 @@
         </copy>
     </target>
 
-    <target name="startapp">
+    <target name="server.start" description="Start Application server">
         <!-- Not implemented-->
-        <exec executable="net" vmlauncher="false"> 
-            <arg value="start"/> 
-            <arg value="${application.service.name}"/> 
+        <exec executable="bash" vmlauncher="false">
+            <arg value="${application.server.start.cmd}"/>
+            <arg value="start"/>
+            <arg value="${application.server.name}"/>
         </exec> 
     </target> 
 
-    <target name="stopapp"> 
+    <target name="server.stop">
         <!-- Not implemented-->       
-        <exec executable="net" vmlauncher="false"> 
-            <arg value="stop"/> 
-            <arg value="${application.service.name}"/> 
-        </exec> 
-        <sleep seconds="10"/>
-    </target> 
+        <exec executable="bash" vmlauncher="false" description="Stop Application server">
+            <arg value="${application.server.stop.cmd}"/>
+            <arg value="stop"/>
+            <arg value="${application.server.name}"/>
+        </exec>
+    </target>
+
+    <target name="server.restart" depends="build.war">
+        <antcall target="server.stop"/>
+        <antcall target="server.start"/>
+    </target>
 
     <target name="clean" description="Clean everything in target folder">
         <delete dir="${target}"/>
