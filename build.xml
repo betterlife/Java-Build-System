@@ -338,7 +338,7 @@
     <target name="reportall" depends="cc.report,junit.report,findbugs,pmd"
             description="Generate code coverage, unit test, findbugs and PMD report"/>
 
-    <target name="docs:javadoc" description="Generate java doc">
+    <target name="docs.javadoc" description="Generate java doc">
         <echo>Generating java doc</echo>
         <javadoc
             destdir     = "${docs.javadoc}"
