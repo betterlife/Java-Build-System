@@ -40,7 +40,7 @@
     <property name = "artifact.flat.path"          location = "${artifact.path}/flat"/>
 
     <!-- Top report folder -->
-    <property name = "reports"                     location = "${artifact.path}/reports"/>
+    <property name = "reports"                     location = "${target}/reports"/>
     <property name = "reports.junit.report"        location = "${reports}/junit"/>
     <property name = "reports.codeCoverage.report" location = "${reports}/codeCoverage"/>
     <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
