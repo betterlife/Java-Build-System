@@ -45,8 +45,8 @@ Usage
   ant -f .builder/build.xml [targetName]
 ```  
 
- Target list  
- -----------
+Target list  
+-----------
 
 - Common Tasks    
 ```
