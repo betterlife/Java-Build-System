@@ -3,14 +3,16 @@ Java-Build-System
 
 Java Build System
 
-- Description
+Description
+-----------
 
 This is a build system for java / web project build upon Apache Ant, the reason why I create this system rather than use maven is 
 
   - Keep things simply focusing on what I cares
   - Take full control of how things to be done, not only what needs to be done.
 
-Features include
+Features
+--------
 
   - Build / Package / Junit test
   - FindBugs Report
@@ -20,6 +22,7 @@ Features include
   - Generate JavaDoc
 
 Bootstrap
+---------
   This module can be used as a sub module for your WebApp, bootstrap code as below:
 ```
   mkdir myWebApp  # Workspace
@@ -33,30 +36,33 @@ Bootstrap
   ant -f .builder/build.xml help # Show build system help information.
 ```  
   
-- Configuration
+Configuration
+-------------
 
   All configurations is in .builder/projectTemplate/work/build.properties, and all the settings are documented in that file.
   
-- Usage 
+Usage 
+-----
 
   In the webApp root folder, invoke the command via:
 ```
   ant -f .builder/build.xml [targetName]
 ```  
 
-- Target list  
+ Target list  
+ -----------
 
-  - Common Tasks    
+- Common Tasks    
 ```
  clean           Clean everything in target folder
 ```
 
-  - Compile source code
+- Compile source code
 ```
  compile         Compile source code
 ```
 
-  - Junit related tasks
+- Junit tasks
 ```
  junit.compile   Compile unit test source code
  junit.run       Run unit tests
@@ -64,7 +70,7 @@ Bootstrap
  junit.report    Generate unit test report in xml and html format
 ``` 
 
-  - Code QA related tasks
+- Code QA tasks
 ```    
  findbugs        Generate findbugs report
  cc.report       Generate unit test code coverage report
@@ -72,13 +78,13 @@ Bootstrap
  reportall       Generate code coverage, unit test, findbugs and PMD report
 ```
 
-  - Artifact related tasks
+- Artifact tasks
 ```   
  build.flat      Prepare contents and folder structure for war packing
  build.war       Generate war package for web app
 ```
 
-  - Application server tasks(Current liberty on MAC supported)    
+- Application server tasks(Current liberty on MAC supported)    
 ```    
  server.restart  Restart Application Server
  server.start    Start Application server
@@ -86,7 +92,7 @@ Bootstrap
  server.stop     Stop Application server
 ``` 
  
-  - Utility tasks
+- Utility tasks
 ```    
  run             Run class, full class name(xxx) passed by parameter c(-Dc=xxx)
  docs.javadoc    Generate java doc 
@@ -94,6 +100,7 @@ Bootstrap
  help            Show help content
 ```
 
-- License
+License
+-------
 
 MIT © 2008-2014 Liu Xiangqian
