@@ -6,3 +6,6 @@ target
 *.iws
 *.ipr
 *.iml
+work/WebContent/js/bower_components
+*.class
+.clover
