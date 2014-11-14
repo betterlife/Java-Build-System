@@ -13,12 +13,87 @@ This is a build system for java / web project build upon Apache Ant, the reason 
 Features include
 
   - Build / Package / Junit test
-  - Findbugs
-  - PMD
+  - FindBugs Report
+  - PMD Report
   - Unit test code coverage
-  - Generate ctags/cscope tag file.
+  - Generate ctags/cscope format tag file.
   - Generate JavaDoc
 
-- Usage
+Bootstrap
+  This module can be used as a sub module for your WebApp, bootstrap code as below:
+```
+  mkdir myWebApp  # Workspace
+  cd myWebApp     
+  git init
+  git submodule add https://github.com/betterlife/Java-Build-System.git .builder
+  cd .builder
+  chmod +x init.sh
+  ./init.sh
+  cd ..
+  ant -f .builder/build.xml help # Show build system help information.
+```  
+  
+- Configuration
 
-  - Please run ant -p to show all the targets.
+  All configurations is in .builder/projectTemplate/work/build.properties, and all the settings are documented in that file.
+  
+- Usage 
+
+  In the webApp root folder, invoke the command via:
+```
+  ant -f .builder/build.xml [targetName]
+```  
+
+- Target list  
+
+  - Common Tasks    
+```
+ clean           Clean everything in target folder
+```
+
+  - Compile source code
+```
+ compile         Compile source code
+```
+
+  - Junit related tasks
+```
+ junit.compile   Compile unit test source code
+ junit.run       Run unit tests
+ junit.test      Run a specify test(-Dtest=xxx) 
+ junit.report    Generate unit test report in xml and html format
+``` 
+
+  - Code QA related tasks
+```    
+ findbugs        Generate findbugs report
+ cc.report       Generate unit test code coverage report
+ pmd             Generate PMD report
+ reportall       Generate code coverage, unit test, findbugs and PMD report
+```
+
+  - Artifact related tasks
+```   
+ build.flat      Prepare contents and folder structure for war packing
+ build.war       Generate war package for web app
+```
+
+  - Application server tasks(Current liberty on MAC supported)    
+```    
+ server.restart  Restart Application Server
+ server.start    Start Application server
+ server.status   Show Application server status
+ server.stop     Stop Application server
+``` 
+ 
+  - Utility tasks
+```    
+ run             Run class, full class name(xxx) passed by parameter c(-Dc=xxx)
+ docs.javadoc    Generate java doc 
+ tags            Generate tag file for ctags and cscope
+ help            Show help content
+```
+
+- License
+
+MIT © 2008-2014 Liu Xiangqian
