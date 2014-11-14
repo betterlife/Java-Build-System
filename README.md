@@ -18,7 +18,7 @@ Features
 
 Bootstrap
 ---------
-  This module can be used as a sub module for your WebApp, bootstrap code as below:
+  This module can be used as a git sub module for your WebApp, bootstrap code as below:
 ```
   mkdir myWebApp  # Workspace
   cd myWebApp     
@@ -34,7 +34,8 @@ Bootstrap
 Configuration
 -------------
 
-  All configurations is in .builder/projectTemplate/work/build.properties, and all the settings are documented in that file.
+  Build configuration is copied from __.builder/projectTemplate/work/build.properties__ to __work/build.properties__,
+  and all the settings are self documented by inline comments in that file.
   
 Usage 
 -----
