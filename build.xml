@@ -1,14 +1,14 @@
-<project default="help" basedir=".">
+<project default="help" basedir="../">
 
-    <property name = "common.lib.dir"              location = "../lib"/>
-    <property name = "target"                      location = "../target"/>
-    <property name = "work"                        location = "../work"/>
-    <property name = "tools"                       location = "./tools"/>
+    <property name = "common.lib.dir"              location = "./lib"/>
+    <property name = "target"                      location = "./target"/>
+    <property name = "work"                        location = "./work"/>
+    <property name = "tools"                       location = ".builder/tools"/>
 
     <property file = "${work}/build.properties"/>
 
     <property name = "findbugs.home"               location = "${tools}/findbugs"/>
-    <property name = "cobertura.home"              location = "${tools}/cobertura"/>
+    <property name = "clover.home"                 location = "${tools}/clover-ant"/>
     <property name = "junit.home"                  location = "${tools}/junit"/>
     <property name = "pmd.home"                    location = "${tools}/pmd"/>
     <property name = "ant-contrib.home"            location = "${tools}/ant-contrib"/>
@@ -20,10 +20,11 @@
     <property name = "build.webcontent.path.lib"   location = "${work}/WebContent/WEB-INF/lib"/>
 
     <!-- Classes folder -->
-    <property name = "build.production.classes"    location = "${target}/classes/production"/>
-    <property name = "build.test.classes"          location = "${target}/classes/test"/>
+    <property name = "build.classes"               location = "${target}/classes"/>
+    <property name = "build.production.classes"    location = "${build.classes}/production"/>
+    <property name = "build.test.classes"          location = "${build.classes}/test"/>
     <property name = "build.test.tmp"              location = "${target}/tmp"/>
-    <property name = "build.instrument.classes"    location = "${target}/classes/instrument"/>
+    <property name = "build.instrument.classes"    location = "${build.classes}/instrument"/>
 
     <!-- Top data folder -->
     <property name = "data"                        location = "${target}/data"/>
@@ -60,10 +61,9 @@
     <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/server"/>
     <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/server"/>
 
-    <path id="cobertura.classpath">
-        <fileset dir="${cobertura.home}">
-            <include name="cobertura.jar" />
-            <include name="lib/**/*.jar" />
+    <path id="clover.classpath">
+        <fileset dir="${clover.home}">
+            <include name="lib/*.jar" />
         </fileset>
     </path>
 
@@ -107,19 +107,47 @@
         </fileset>
     </path>
 
+    <path id="production.compile.classpath">
+        <path        refid = "common.classpath"/>
+        <path        refid = "runtime.classpath"/>
+    </path>
+
+    <path id="production.run.classpath">
+        <path refid = "common.classpath"/>
+        <path refid = "runtime.classpath"/>
+    </path>
+
+    <path id="test.compile.classpath">
+        <pathelement location = "${build.production.classes}"/>
+        <path refid = "common.classpath"/>
+        <path refid = "junit.classpath"/>
+        <path refid = "runtime.classpath"/>
+    </path>
+
+    <path id="test.run.classpath">
+        <pathelement location = "${build.instrument.classes}"/>
+        <pathelement location = "${build.test.classes}"/>
+        <pathelement location = "${build.production.classes}"/>
+        <path           refid = "junit.classpath"/>
+        <path           refid = "common.classpath"/>
+        <path           refid = "runtime.classpath"/>
+    </path>
+
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugs.classpath"/>
-    <taskdef resource="tasks.properties" classpathref="cobertura.classpath"/>
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
     <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.classpath"/>
+    <taskdef resource="cloverlib.xml" classpathref="clover.classpath"/>
+    <property environment = "env"/>
+    <clover-env/>
 
     <target name="help" description="Show help content">
         <echo>--------------- Usage for this build system -------------</echo>
         <echo>[ant help] display help information(you are actually doing this now)</echo>
         <echo>[ant compile] compile the source code</echo>
         <echo>[ant junit.compile] compile test cases</echo>
-        <echo>[ant junit.run] run test cases</echo>
+        <echo>[ant junit.run.all] run test cases</echo>
+        <echo>[ant junit.run.one -Dtest=xxx] run one specific test</echo>
         <echo>[ant junit.report] generate junit reports</echo>
-        <echo>[ant cc.instrument] generate code coverage instrument classes</echo>
         <echo>[ant cc.report] generate code coverage report</echo>
         <echo>[ant findbugs] invoke find bugs and generate corresponding report</echo>
         <echo>[ant reportall] generate reports including code coverage, unit test and find bug</echo>
@@ -169,35 +197,16 @@
         <include name="**/*.java"/>
         <exclude name="**/${build.production.src.exclude}"/>
         <classpath>
-          <path refid = "common.classpath"/>
-          <path refid = "runtime.classpath"/>
+          <path refid = "production.compile.classpath"/>
         </classpath>
       </javac>
     </target>
 
-    <target name="cc.instrument" depends="compile">
-        <copy todir="${build.test.classes}">
-            <fileset dir="${build.test.data}">
-                <exclude name="**/*/*swp*"/>
-            </fileset>
-        </copy>
-        <cobertura-instrument
-            todir    = "${build.instrument.classes}"
-            datafile = "${reports.codeCoverage.data}/metadata.ser">
-            <fileset dir = "${build.production.classes}"/>
-        </cobertura-instrument>
+    <target name="cc.setup">
+        <clover-setup/>
     </target>
 
-    <target name="cc.report" depends="cc.instrument, junit.run"
-            description="Generate unit test code coverage report">
-        <cobertura-report
-            format   = "html"
-            datafile = "${reports.codeCoverage.data}/metadata.ser"
-            destdir  = "${reports.codeCoverage.report}"
-            srcdir   = "${build.production.src}"/>
-    </target>
-
-    <target name="junit.compile" depends="compile"
+    <target name="junit.compile" depends="clean.classes,compile"
             description="Compile unit test source code">
         <javac
             srcdir            = "${build.test.src}"
@@ -212,15 +221,12 @@
             <compilerarg value="-J-Duser.language=en"/>
             <include name="**/*.java"/>
             <classpath>
-                <pathelement location = "${build.production.classes}"/>
-                <path           refid = "common.classpath"/>
-                <path           refid = "junit.classpath"/>
-                <path           refid = "runtime.classpath"/>
+                <path refid = "test.compile.classpath"/>
             </classpath>
         </javac>
     </target>
 
-    <target name="junit.run" depends="junit.compile"
+    <target name="junit.run.all" depends="junit.compile"
             description="Run unit tests">
         <tstamp/>
         <copy todir="${build.test.classes}">
@@ -256,13 +262,7 @@
             original (uninstrumented) classes. This is important.
             -->
             <classpath>
-                <pathelement location = "${build.instrument.classes}"/>
-                <pathelement location = "${build.test.classes}"/>
-                <pathelement location = "${build.production.classes}"/>
-                <path           refid = "cobertura.classpath"/>
-                <path           refid = "junit.classpath"/>
-                <path           refid = "common.classpath"/>
-                <path           refid = "runtime.classpath"/>
+                <path refid="test.run.classpath"/>
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
@@ -275,7 +275,7 @@
         </junit>
     </target>
 
-    <target name="junit.test" depends="junit.compile" description="Run a specify test(-Dtest=xxx)">
+    <target name="junit.run.one" depends="junit.compile" description="Run a specify test(-Dtest=xxx)">
         <property name="test" value="${test}"/>
         <junit printsummary  = "false"
                forkmode      = "perBatch"
@@ -283,13 +283,7 @@
                haltonfailure = "false"
                maxmemory     = "256M">
             <classpath>
-                <pathelement location = "${build.instrument.classes}"/>
-                <pathelement location = "${build.test.classes}"/>
-                <pathelement location = "${build.production.classes}"/>
-                <path           refid = "cobertura.classpath"/>
-                <path           refid = "junit.classpath"/>
-                <path           refid = "common.classpath"/>
-                <path           refid = "runtime.classpath"/>
+                <path refid="test.run.classpath"/>
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
@@ -297,7 +291,7 @@
         </junit>
     </target>
 
-    <target name="junit.report" depends="junit.run"
+    <target name="junit.report" depends="junit.run.all"
             description="Generate unit test report in xml and html format">
         <junitreport todir="${reports.junit.report}">
             <fileset dir="${reports.junit.data}">
@@ -305,6 +299,47 @@
             </fileset>
             <report format="frames" todir="${reports.junit.report}"/>
         </junitreport>
+    </target>
+
+    <target name="cc.report" depends="clean.classes, cc.setup"
+            description="Generate unit test code coverage report">
+        <path id="production.compile.classpath">
+            <path        refid = "common.classpath"/>
+            <path        refid = "runtime.classpath"/>
+            <path        refid = "clover.classpath"/>
+        </path>
+
+        <path id="production.run.classpath">
+            <path refid = "common.classpath"/>
+            <path refid = "runtime.classpath"/>
+            <path refid = "clover.classpath"/>
+        </path>
+
+        <path id="test.compile.classpath">
+            <pathelement location = "${build.production.classes}"/>
+            <path refid = "common.classpath"/>
+            <path refid = "junit.classpath"/>
+            <path refid = "runtime.classpath"/>
+            <path refid = "clover.classpath"/>
+        </path>
+
+        <path id="test.run.classpath">
+            <pathelement location = "${build.instrument.classes}"/>
+            <pathelement location = "${build.test.classes}"/>
+            <pathelement location = "${build.production.classes}"/>
+            <path           refid = "junit.classpath"/>
+            <path           refid = "common.classpath"/>
+            <path           refid = "runtime.classpath"/>
+            <path           refid = "clover.classpath"/>
+        </path>
+        <antcall target="compile"/>
+        <antcall target="junit.run.all"/>
+        <clover-report>
+            <current outfile="${reports.codeCoverage.data}/coverage.xml">
+                <format type="xml"/>
+            </current>
+          </clover-report>
+        <clover-html-report outdir="${reports.codeCoverage.report}"/>
     </target>
 
     <target name="findbugs" depends="compile"
@@ -335,7 +370,7 @@
         </pmd>
     </target>
 
-    <target name="reportall" depends="cc.report,junit.report,findbugs,pmd"
+    <target name="reportall" depends="findbugs,pmd,cc.report"
             description="Generate code coverage, unit test, findbugs and PMD report"/>
 
     <target name="docs.javadoc" description="Generate java doc">
@@ -353,7 +388,6 @@
                 <include name="**"/>
             </fileset>
         </javadoc>
-
     </target>
 
     <target name="tags" description="Generate tag file for ctags and cscope">
@@ -379,7 +413,7 @@
     <target name="run" depends="compile" description="Run class, full class name(xxx) passed by parameter c(-Dc=xxx)">
         <java classname="${c}">
             <classpath>
-                <pathelement path = "${build.production.classes}"/>
+                <path refid="production.run.classpath"/>
             </classpath>
         </java>
     </target>
@@ -443,6 +477,10 @@
 
     <target name="clean" description="Clean everything in target folder">
         <delete dir="${target}"/>
+    </target>
+
+    <target name="clean.classes" description="Clean everything in target folder">
+        <delete dir="${build.classes}"/>
     </target>
 
 </project>
