@@ -274,6 +274,7 @@
                 <fileset dir="${build.test.classes}">
                     <include name = "**/*Test*.class"/>
                     <exclude name = "**/AllTests.class"/>
+                    <exclude name = "**/*$__CLR*"/>
                 </fileset>
             </batchtest>
         </junit>
