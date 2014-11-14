@@ -1,8 +1,3 @@
-Java-Build-System
-=================
-
-Java Build System
-
 Description
 -----------
 
