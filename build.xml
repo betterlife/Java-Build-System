@@ -454,4 +454,8 @@
     <target name="clean" description="Clean everything in target folder">
         <delete dir="${target}"/>
     </target>
+
+    <target name="clean.classes" description="Clean everything in target classes folder">
+        <delete dir="${build.classes}"/>
+    </target>
 </project>
