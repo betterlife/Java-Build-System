@@ -108,13 +108,15 @@
     </path>
 
     <path id="production.compile.classpath">
-        <path        refid = "common.classpath"/>
-        <path        refid = "runtime.classpath"/>
+        <path refid = "common.classpath"/>
+        <path refid = "runtime.classpath"/>
+        <path refid = "clover.classpath"/>
     </path>
 
     <path id="production.run.classpath">
         <path refid = "common.classpath"/>
         <path refid = "runtime.classpath"/>
+        <path refid = "clover.classpath"/>
     </path>
 
     <path id="test.compile.classpath">
@@ -122,6 +124,7 @@
         <path refid = "common.classpath"/>
         <path refid = "junit.classpath"/>
         <path refid = "runtime.classpath"/>
+        <path refid = "clover.classpath"/>
     </path>
 
     <path id="test.run.classpath">
@@ -131,6 +134,7 @@
         <path           refid = "junit.classpath"/>
         <path           refid = "common.classpath"/>
         <path           refid = "runtime.classpath"/>
+        <path           refid = "clover.classpath"/>
     </path>
 
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugs.classpath"/>
@@ -206,7 +210,7 @@
         <clover-setup/>
     </target>
 
-    <target name="junit.compile" depends="clean.classes,compile"
+    <target name="junit.compile" depends="compile"
             description="Compile unit test source code">
         <javac
             srcdir            = "${build.test.src}"
@@ -301,39 +305,8 @@
         </junitreport>
     </target>
 
-    <target name="cc.report" depends="clean.classes, cc.setup"
+    <target name="cc.report" depends="cc.setup, junit.run.all"
             description="Generate unit test code coverage report">
-        <path id="production.compile.classpath">
-            <path        refid = "common.classpath"/>
-            <path        refid = "runtime.classpath"/>
-            <path        refid = "clover.classpath"/>
-        </path>
-
-        <path id="production.run.classpath">
-            <path refid = "common.classpath"/>
-            <path refid = "runtime.classpath"/>
-            <path refid = "clover.classpath"/>
-        </path>
-
-        <path id="test.compile.classpath">
-            <pathelement location = "${build.production.classes}"/>
-            <path refid = "common.classpath"/>
-            <path refid = "junit.classpath"/>
-            <path refid = "runtime.classpath"/>
-            <path refid = "clover.classpath"/>
-        </path>
-
-        <path id="test.run.classpath">
-            <pathelement location = "${build.instrument.classes}"/>
-            <pathelement location = "${build.test.classes}"/>
-            <pathelement location = "${build.production.classes}"/>
-            <path           refid = "junit.classpath"/>
-            <path           refid = "common.classpath"/>
-            <path           refid = "runtime.classpath"/>
-            <path           refid = "clover.classpath"/>
-        </path>
-        <antcall target="compile"/>
-        <antcall target="junit.run.all"/>
         <clover-report>
             <current outfile="${reports.codeCoverage.data}/coverage.xml">
                 <format type="xml"/>
@@ -349,6 +322,9 @@
             outputFile="${reports.findbugs.report}/index.htm" >
             <systemProperty name = "findbugs.home"
                            value = "${findbugs.home}"/>
+            <auxClasspath>
+                <path refid = "production.compile.classpath"/>
+            </auxClasspath>
             <sourcePath path = "${build.production.src}"/>
             <class  location = "${build.production.classes}"/>
         </findbugs>
@@ -478,9 +454,4 @@
     <target name="clean" description="Clean everything in target folder">
         <delete dir="${target}"/>
     </target>
-
-    <target name="clean.classes" description="Clean everything in target folder">
-        <delete dir="${build.classes}"/>
-    </target>
-
 </project>
