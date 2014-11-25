@@ -30,7 +30,7 @@
     <!-- Top data folder -->
     <property name = "data"                        location = "${target}/data"/>
     <property name = "reports.junit.data"          location = "${data}/junit"/>
-    <property name = "reports.codeCoverage.data"   location = "${data}/codeCoverage"/>
+    <property name = "reports.codeCoverage.data"   location = "${data}/coverage"/>
     <property name = "reports.findbugs.data"       location = "${data}/findbugs"/>
     <property name = "reports.pmd.data"            location = "${data}/pmd"/>
     <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
@@ -46,7 +46,7 @@
     <!-- Top report folder -->
     <property name = "reports"                     location = "${target}/reports"/>
     <property name = "reports.junit.report"        location = "${reports}/junit"/>
-    <property name = "reports.codeCoverage.report" location = "${reports}/codeCoverage"/>
+    <property name = "reports.codeCoverage.report" location = "${reports}/coverage"/>
     <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
     <property name = "reports.pmd.report"          location = "${reports}/pmd"/>
     <property name = "reports.simian.report"       location = "${reports}/simian"/>
