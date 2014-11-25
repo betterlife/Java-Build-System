@@ -12,6 +12,7 @@
     <property name = "junit.home"                  location = "${tools}/junit"/>
     <property name = "pmd.home"                    location = "${tools}/pmd"/>
     <property name = "ant-contrib.home"            location = "${tools}/ant-contrib"/>
+    <property name = "simian.home"                 location = "${tools}/simian"/>
 
     <property name = "build.production.src"        location = "${work}/src"/>
     <property name = "build.test.src"              location = "${work}/test/src"/>
@@ -34,6 +35,8 @@
     <property name = "reports.pmd.data"            location = "${data}/pmd"/>
     <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
     <property name = "report.pmd.file.name"           value = "report_pmd"/>
+    <property name = "reports.simian.data"         location = "${data}/simian"/>
+    <property name = "reports.simian.file.name"       value = "simian"/>
 
     <!-- Artifacts folder -->
     <property name = "artifact.path"               location = "${target}/artifact"/>
@@ -46,6 +49,7 @@
     <property name = "reports.codeCoverage.report" location = "${reports}/codeCoverage"/>
     <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
     <property name = "reports.pmd.report"          location = "${reports}/pmd"/>
+    <property name = "reports.simian.report"       location = "${reports}/simian"/>
 
     <!-- Docs folder -->
     <property name = "docs"                        location = "${target}/docs"/>
@@ -60,6 +64,12 @@
     <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/server"/>
     <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/server"/>
     <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/server"/>
+
+    <path id="simian.classpath">
+        <fileset dir="${simian.home}">
+            <include name="bin/*.jar" />
+        </fileset>
+    </path>
 
     <path id="clover.classpath">
         <fileset dir="${clover.home}">
@@ -137,6 +147,7 @@
         <path           refid = "clover.classpath"/>
     </path>
 
+    <taskdef resource="simiantask.properties" classpathref="simian.classpath"/>
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugs.classpath"/>
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
     <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.classpath"/>
@@ -154,6 +165,7 @@
         <echo>[ant junit.report] generate junit reports</echo>
         <echo>[ant cc.report] generate code coverage report</echo>
         <echo>[ant findbugs] invoke find bugs and generate corresponding report</echo>
+        <echo>[ant simian] run simian for duplicate code scan</echo>
         <echo>[ant reportall] generate reports including code coverage, unit test and find bug</echo>
         <echo>[ant docs.javadoc] generate javadoc for the source code</echo>
         <echo>[ant tags] generate ctags and cscope tags for the source code</echo>
@@ -181,6 +193,8 @@
         <mkdir dir="${reports.findbugs.report}"/>
         <mkdir dir="${reports.pmd.data}"/>
         <mkdir dir="${reports.pmd.report}"/>
+        <mkdir dir="${reports.simian.data}"/>
+        <mkdir dir="${reports.simian.report}"/>
         <mkdir dir="${docs.javadoc}"/>
         <mkdir dir="${artifact.package.path}"/>
         <mkdir dir="${artifact.flat.path}"/>        
@@ -347,7 +361,17 @@
         </pmd>
     </target>
 
-    <target name="reportall" depends="findbugs,pmd,cc.report"
+    <target name="simian" description="Generate simian report for duplicate code scan" depends="init">
+        <simian language="java" threshold="3">
+            <fileset dir="${build.production.src}" includes="**/*.java"/>
+            <formatter type="xml" toFile="${reports.simian.data}/${reports.simian.file.name}.xml"/>
+        </simian>
+        <xslt in="${reports.simian.data}/${reports.simian.file.name}.xml"
+              out="${reports.simian.report}/${reports.simian.file.name}.html"
+              style="${simian.home}/simian.xsl"/>
+    </target>
+
+    <target name="reportall" depends="findbugs,pmd,simian,cc.report"
             description="Generate code coverage, unit test, findbugs and PMD report"/>
 
     <target name="docs.javadoc" description="Generate java doc">
