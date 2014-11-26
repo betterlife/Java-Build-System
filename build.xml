@@ -70,7 +70,6 @@
     <property name="sonar.projectVersion" value="${assemble.package.version}"/>
     <property name="sonar.sources" value="${work}"/>
     <property name="sonar.binaries" value="${build.production.classes}" />
-    <property name="sonar.exclusions" value="test/**/*.java,WebContent/js/bower_components/**/*.*" />
     <property name="sonar.projectBaseDir" value="${work}"/>
     <property name="sonar.sourceEncoding" value="UTF-8" />
     <property name="sonar.clover.reportPath" value="${reports.coverage.file.name}"/>
