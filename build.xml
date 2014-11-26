@@ -30,7 +30,8 @@
     <!-- Top data folder -->
     <property name = "data"                        location = "${target}/data"/>
     <property name = "reports.junit.data"          location = "${data}/junit"/>
-    <property name = "reports.codeCoverage.data"   location = "${data}/coverage"/>
+    <property name = "reports.coverage.data"       location = "${data}/coverage"/>
+    <property name = "reports.coverage.file.name"  location = "${data}/coverage/coverage.xml"/>
     <property name = "reports.findbugs.data"       location = "${data}/findbugs"/>
     <property name = "reports.pmd.data"            location = "${data}/pmd"/>
     <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
@@ -46,7 +47,7 @@
     <!-- Top report folder -->
     <property name = "reports"                     location = "${target}/reports"/>
     <property name = "reports.junit.report"        location = "${reports}/junit"/>
-    <property name = "reports.codeCoverage.report" location = "${reports}/coverage"/>
+    <property name = "reports.coverage.report"     location = "${reports}/coverage"/>
     <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
     <property name = "reports.pmd.report"          location = "${reports}/pmd"/>
     <property name = "reports.simian.report"       location = "${reports}/simian"/>
@@ -64,6 +65,21 @@
     <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/server"/>
     <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/server"/>
     <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/server"/>
+
+    <!-- Define the Sonar project properties -->
+    <property name="sonar.projectVersion" value="${assemble.package.version}"/>
+    <property name="sonar.sources" value="${work}"/>
+    <property name="sonar.binaries" value="${build.production.classes}" />
+    <property name="sonar.exclusions" value="test/**/*.java,WebContent/js/bower_components/**/*.*" />
+    <property name="sonar.projectBaseDir" value="${work}"/>
+    <property name="sonar.sourceEncoding" value="UTF-8" />
+    <property name="sonar.clover.reportPath" value="${reports.coverage.file.name}"/>
+
+    <path id="sonar.classpath">
+        <fileset dir=".builder/tools/sonar">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
 
     <path id="simian.classpath">
         <fileset dir="${simian.home}">
@@ -147,6 +163,7 @@
         <path           refid = "clover.classpath"/>
     </path>
 
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml" classpathref="sonar.classpath"/>
     <taskdef resource="simiantask.properties" classpathref="simian.classpath"/>
     <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="findbugs.classpath"/>
     <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
@@ -184,8 +201,8 @@
     <target name="init">
         <mkdir dir="${build.production.classes}"/>
         <mkdir dir="${build.instrument.classes}"/>
-        <mkdir dir="${reports.codeCoverage.data}"/>
-        <mkdir dir="${reports.codeCoverage.report}"/>
+        <mkdir dir="${reports.coverage.data}"/>
+        <mkdir dir="${reports.coverage.report}"/>
         <mkdir dir="${build.test.classes}"/>
         <mkdir dir="${build.test.tmp}"/>
         <mkdir dir="${reports.junit.data}"/>
@@ -221,7 +238,7 @@
     </target>
 
     <target name="cc.setup">
-        <clover-setup/>
+        <clover-setup enabled="true"/>
     </target>
 
     <target name="junit.compile" depends="compile"
@@ -268,17 +285,6 @@
                    fork          = "true"
                    haltonfailure = "false"
                    maxmemory     = "2048M">
-            <!--
-            Specify the name of the coverage data file to use.
-            The value specified below is the default.
-            -->
-            <sysproperty
-                key  = "net.sourceforge.cobertura.datafile"
-                file = "${reports.codeCoverage.data}/metadata.ser" />
-            <!--
-            Note the classpath order: instrumented classes are before the
-            original (uninstrumented) classes. This is important.
-            -->
             <classpath>
                 <path refid="test.run.classpath"/>
             </classpath>
@@ -323,11 +329,11 @@
     <target name="cc.report" depends="cc.setup, junit.run.all"
             description="Generate unit test code coverage report">
         <clover-report>
-            <current outfile="${reports.codeCoverage.data}/coverage.xml">
+            <current outfile="${reports.coverage.file.name}">
                 <format type="xml"/>
             </current>
           </clover-report>
-        <clover-html-report outdir="${reports.codeCoverage.report}"/>
+        <clover-html-report outdir="${reports.coverage.report}"/>
     </target>
 
     <target name="findbugs" depends="compile"
@@ -371,7 +377,15 @@
               style="${simian.home}/simian.xsl"/>
     </target>
 
-    <target name="reportall" depends="findbugs,pmd,simian,cc.report"
+    <target name="sonar" depends="cc.report">
+        <antcall target="clean.classes"/>
+        <clover-setup enabled="false"/>
+        <antcall target="compile"/>
+        <antcall target="junit.compile"/>
+        <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
+    </target>
+
+    <target name="reportall" depends="findbugs,pmd,simian,sonar,cc.report"
             description="Generate code coverage, unit test, findbugs and PMD report"/>
 
     <target name="docs.javadoc" description="Generate java doc">
@@ -478,6 +492,8 @@
 
     <target name="clean" description="Clean everything in target folder">
         <delete dir="${target}"/>
+        <delete dir=".sonar"/>
+        <delete dir=".clover"/>
     </target>
 
     <target name="clean.classes" description="Clean everything in target classes folder">
