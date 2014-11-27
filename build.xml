@@ -462,6 +462,13 @@
         </antcall>
     </target>
 
+    <target name="server.debug" depends="build.war" description="Start Application server in debug mode">
+        <antcall target="_server.internal.cmd">
+            <param name="cmd" value="${application.server.start.cmd}"/>
+            <param name="cmd.param" value="debug"/>
+        </antcall>
+    </target>
+
     <target name="server.stop" description="Stop Application server">
         <antcall target="_server.internal.cmd">
             <param name="cmd" value="${application.server.stop.cmd}"/>
@@ -478,6 +485,7 @@
 
     <target name="_server.internal.cmd">
         <exec executable="bash" vmlauncher="false">
+            <env value="${application.server.debug.port}" key="WLP_DEBUG_ADDRESS"/>
             <arg value="${cmd}"/>
             <arg value="${cmd.param}"/>
             <arg value="${application.server.name}"/>
