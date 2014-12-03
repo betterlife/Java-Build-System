@@ -1,4 +1,4 @@
-<project default="help" basedir="../">
+<project default="help" basedir=".">
 
     <property name = "common.lib.dir"              location = "./lib"/>
     <property name = "target"                      location = "./target"/>
@@ -13,6 +13,7 @@
     <property name = "pmd.home"                    location = "${tools}/pmd"/>
     <property name = "ant-contrib.home"            location = "${tools}/ant-contrib"/>
     <property name = "simian.home"                 location = "${tools}/simian"/>
+    <property name = "sonar.home"                  location = "${tools}/sonar"/>
 
     <property name = "build.production.src"        location = "${work}/src"/>
     <property name = "build.test.src"              location = "${work}/test/src"/>
@@ -75,7 +76,7 @@
     <property name="sonar.clover.reportPath" value="${reports.coverage.file.name}"/>
 
     <path id="sonar.classpath">
-        <fileset dir=".builder/tools/sonar">
+        <fileset dir="${sonar.home}">
             <include name="*.jar"/>
         </fileset>
     </path>
