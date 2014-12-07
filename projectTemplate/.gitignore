@@ -9,3 +9,5 @@ target
 work/WebContent/js/bower_components
 *.class
 .clover
+.sonar
+rebel*.xml
