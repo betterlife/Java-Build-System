@@ -237,8 +237,12 @@
       </javac>
     </target>
 
-    <target name="cc.setup">
+    <target name="cc.enable">
         <clover-setup enabled="true"/>
+    </target>
+
+    <target name="cc.disable">
+        <clover-setup enabled="false"/>
     </target>
 
     <target name="junit.compile" depends="compile"
@@ -326,7 +330,7 @@
         </junitreport>
     </target>
 
-    <target name="cc.report" depends="cc.setup, junit.run.all"
+    <target name="cc.report" depends="cc.enable, junit.run.all"
             description="Generate unit test code coverage report">
         <clover-report>
             <current outfile="${reports.coverage.file.name}">
@@ -433,7 +437,7 @@
         </java>
     </target>
 
-    <target name="build.flat" depends="compile">
+    <target name="build.flat" depends="cc.disable, compile">
         <copy todir="${artifact.flat.path}">
             <fileset dir="${build.webcontent.path}">
                 <exclude name="**/*/*swp*"/>
