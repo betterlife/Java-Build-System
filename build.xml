@@ -129,7 +129,7 @@
 
     <path id="runtime.classpath">
         <fileset dir="${build.webcontent.path.lib}">
-            <include name="*.jar"/>
+            <include name="**/*.jar"/>
         </fileset>
     </path>
 
@@ -237,6 +237,21 @@
       </javac>
     </target>
 
+    <target name="jpa.enhance">
+        <!-- define the openjpac task -->
+        <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask">
+            <classpath refid="production.compile.classpath"/>
+            <classpath location="${artifact.flat.path}/WEB-INF/classes"/>
+        </taskdef>
+
+        <!-- invoke enhancer the enhancer -->
+        <openjpac>
+            <classpath refid="production.compile.classpath"/>
+            <classpath location="${artifact.flat.path}/WEB-INF/classes"/>
+        </openjpac>
+        <echo message="Enhancing complete."/>
+    </target>
+
     <target name="cc.enable">
         <clover-setup enabled="true"/>
     </target>
@@ -340,6 +355,12 @@
         <clover-html-report outdir="${reports.coverage.report}"/>
     </target>
 
+    <target name="cc.open" depends="cc.report">
+        <exec executable="open">
+            <arg line="${reports.coverage.report}/index.html"/>
+        </exec>
+    </target>
+
     <target name="findbugs" depends="compile"
             description="Generate findbugs report">
         <findbugs home="${findbugs.home}"
@@ -440,13 +461,21 @@
     <target name="build.flat" depends="cc.disable, compile">
         <copy todir="${artifact.flat.path}">
             <fileset dir="${build.webcontent.path}">
+                <!-- Files in WEB-INF/lib will be copied separately in next statement-->
+                <exclude name="WEB-INF/lib/**/*"/>
                 <exclude name="**/*/*swp*"/>
                 <exclude name="**/*/*.bak"/>
+            </fileset>
+        </copy>
+        <copy todir="${artifact.flat.path}/WEB-INF/lib" flatten="true">
+            <fileset dir="${build.webcontent.path.lib}">
+                <include name="**/*.jar"/>
             </fileset>
         </copy>
         <copy todir="${artifact.flat.path}/WEB-INF/classes">
             <fileset dir="${build.production.classes}"/>
         </copy>
+        <antcall target="jpa.enhance"/>
     </target>
     
     <target name="build.war" depends="build.flat" description="Generate war package for web app">
