@@ -16,10 +16,10 @@
     <property name = "sonar.home"                  location = "${tools}/sonar"/>
 
     <property name = "build.production.src"        location = "${work}/src"/>
-    <property name = "build.test.src"              location = "${work}/test/src"/>
-    <property name = "build.test.data"             location = "${work}/test/data"/>
+    <property name = "build.test.java.src"         location = "${work}/test/java/src"/>
+    <property name = "build.test.java.data"        location = "${work}/test/java/data"/>
     <property name = "build.webcontent.path"       location = "${work}/WebContent"/>
-    <property name = "build.webcontent.path.lib"   location = "${work}/WebContent/WEB-INF/lib"/>
+    <property name = "build.webcontent.path.lib"   location = "${build.webcontent.path}/WEB-INF/lib"/>
 
     <!-- Classes folder -->
     <property name = "build.classes"               location = "${target}/classes"/>
@@ -263,7 +263,7 @@
     <target name="junit.compile" depends="compile"
             description="Compile unit test source code">
         <javac
-            srcdir            = "${build.test.src}"
+            srcdir            = "${build.test.java.src}"
             destdir           = "${build.test.classes}"
             source            = "${build.source.level}"
             debug             = "true"
@@ -284,7 +284,7 @@
             description="Run unit tests">
         <tstamp/>
         <copy todir="${build.test.classes}">
-            <fileset dir="${build.test.data}">
+            <fileset dir="${build.test.java.data}">
                 <exclude name="**/*/*swp*"/>
             </fileset>
         </copy>
