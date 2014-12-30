@@ -16,8 +16,8 @@
     <property name = "sonar.home"                  location = "${tools}/sonar"/>
 
     <property name = "build.production.src"        location = "${work}/src"/>
-    <property name = "build.test.java.src"         location = "${work}/test/java/src"/>
-    <property name = "build.test.java.data"        location = "${work}/test/java/data"/>
+    <property name = "build.test.java.src"         location = "${work}/test/src"/>
+    <property name = "build.test.java.data"        location = "${work}/test/data"/>
     <property name = "build.webcontent.path"       location = "${work}/WebContent"/>
     <property name = "build.webcontent.path.lib"   location = "${build.webcontent.path}/WEB-INF/lib"/>
 
