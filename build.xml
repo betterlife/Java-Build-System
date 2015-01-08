@@ -237,21 +237,6 @@
       </javac>
     </target>
 
-    <target name="jpa.enhance">
-        <!-- define the openjpac task -->
-        <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask">
-            <classpath refid="production.compile.classpath"/>
-            <classpath location="${artifact.flat.path}/WEB-INF/classes"/>
-        </taskdef>
-
-        <!-- invoke enhancer the enhancer -->
-        <openjpac>
-            <classpath refid="production.compile.classpath"/>
-            <classpath location="${artifact.flat.path}/WEB-INF/classes"/>
-        </openjpac>
-        <echo message="Enhancing complete."/>
-    </target>
-
     <target name="cc.enable">
         <clover-setup enabled="true"/>
     </target>
@@ -475,7 +460,6 @@
         <copy todir="${artifact.flat.path}/WEB-INF/classes">
             <fileset dir="${build.production.classes}"/>
         </copy>
-        <antcall target="jpa.enhance"/>
     </target>
     
     <target name="build.war" depends="build.flat" description="Generate war package for web app">
