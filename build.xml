@@ -38,7 +38,7 @@
     <property name = "reports.coverage.java.data"                  location = "${reports.coverage.data}/java"/>
     <property name = "reports.coverage.java.file.name"             location = "${reports.coverage.java.data}/coverage.xml"/>
     <property name = "reports.coverage.javascript.data"            location = "${reports.coverage.data}/javascript"/>
-    <property name = "reports.coverage.javascript.file.name"       location = "${reports.coverage.javascript.data}/**/lcov.info"/>
+    <property name = "reports.coverage.javascript.file.name"       location = "${reports.coverage.javascript.data}/lcov.info"/>
 
     <property name = "reports.findbugs.data"       location = "${data}/findbugs"/>
     <property name = "reports.pmd.data"            location = "${data}/pmd"/>
