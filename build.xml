@@ -30,9 +30,16 @@
 
     <!-- Top data folder -->
     <property name = "data"                        location = "${target}/data"/>
-    <property name = "reports.junit.data"          location = "${data}/junit"/>
-    <property name = "reports.coverage.data"       location = "${data}/coverage"/>
-    <property name = "reports.coverage.file.name"  location = "${data}/coverage/coverage.xml"/>
+    <property name = "reports.ut.data"             location = "${data}/test"/>
+    <property name = "reports.ut.java.data"        location = "${reports.ut.data}/java"/>
+    <property name = "reports.ut.javascript.data"  location = "${reports.ut.data}/javascript"/>
+
+    <property name = "reports.coverage.data"                       location = "${data}/coverage"/>
+    <property name = "reports.coverage.java.data"                  location = "${reports.coverage.data}/java"/>
+    <property name = "reports.coverage.java.file.name"             location = "${reports.coverage.java.data}/coverage.xml"/>
+    <property name = "reports.coverage.javascript.data"            location = "${reports.coverage.data}/javascript"/>
+    <property name = "reports.coverage.javascript.file.name"       location = "${reports.coverage.javascript.data}/**/lcov.info"/>
+
     <property name = "reports.findbugs.data"       location = "${data}/findbugs"/>
     <property name = "reports.pmd.data"            location = "${data}/pmd"/>
     <property name = "reports.pmd.config"          location = "${pmd.home}/etc/xslt"/>
@@ -46,12 +53,18 @@
     <property name = "artifact.flat.path"          location = "${artifact.path}/flat"/>
 
     <!-- Top report folder -->
-    <property name = "reports"                     location = "${target}/reports"/>
-    <property name = "reports.junit.report"        location = "${reports}/junit"/>
-    <property name = "reports.coverage.report"     location = "${reports}/coverage"/>
-    <property name = "reports.findbugs.report"     location = "${reports}/findbugs"/>
-    <property name = "reports.pmd.report"          location = "${reports}/pmd"/>
-    <property name = "reports.simian.report"       location = "${reports}/simian"/>
+    <property name = "reports"                      location = "${target}/reports"/>
+    <property name = "reports.ut.report"            location = "${target}/reports/test"/>
+    <property name = "reports.ut.java.report"       location = "${reports.ut.report}/java"/>
+    <property name = "reports.ut.javascript.report" location = "${reports.ut.report}/javascript"/>
+
+    <property name = "reports.coverage.report"            location = "${reports}/coverage"/>
+    <property name = "reports.coverage.java.report"       location = "${reports}/coverage/java"/>
+    <property name = "reports.coverage.javascript.report" location = "${reports}/coverage/javascript"/>
+
+    <property name = "reports.findbugs.report"      location = "${reports}/findbugs"/>
+    <property name = "reports.pmd.report"           location = "${reports}/pmd"/>
+    <property name = "reports.simian.report"        location = "${reports}/simian"/>
 
     <!-- Docs folder -->
     <property name = "docs"                        location = "${target}/docs"/>
@@ -73,7 +86,8 @@
     <property name="sonar.binaries" value="${build.production.classes}" />
     <property name="sonar.projectBaseDir" value="${work}"/>
     <property name="sonar.sourceEncoding" value="UTF-8" />
-    <property name="sonar.clover.reportPath" value="${reports.coverage.file.name}"/>
+    <property name="sonar.clover.reportPath" value="${reports.coverage.java.file.name}"/>
+    <property name="sonar.javascript.lcov.reportPath" value="${reports.coverage.javascript.file.name}"/>
 
     <path id="sonar.classpath">
         <fileset dir="${sonar.home}">
@@ -172,47 +186,40 @@
     <property environment = "env"/>
     <clover-env/>
 
-    <target name="help" description="Show help content">
-        <echo>--------------- Usage for this build system -------------</echo>
-        <echo>[ant help] display help information(you are actually doing this now)</echo>
-        <echo>[ant compile] compile the source code</echo>
-        <echo>[ant junit.compile] compile test cases</echo>
-        <echo>[ant junit.run.all] run test cases</echo>
-        <echo>[ant junit.run.one -Dtest=xxx] run one specific test</echo>
-        <echo>[ant junit.report] generate junit reports</echo>
-        <echo>[ant cc.report] generate code coverage report</echo>
-        <echo>[ant findbugs] invoke find bugs and generate corresponding report</echo>
-        <echo>[ant simian] run simian for duplicate code scan</echo>
-        <echo>[ant reportall] generate reports including code coverage, unit test and find bug</echo>
-        <echo>[ant docs.javadoc] generate javadoc for the source code</echo>
-        <echo>[ant tags] generate ctags and cscope tags for the source code</echo>
-        <echo>[ant run -Dc=xxx] Run class xxx(inlcud full package name)</echo>
-        <echo>[ant build.flat] generate flat files ready for packageing</echo>
-        <echo>[ant build.war] generate a war package ready for deploy</echo>
-        <echo>[ant deploy] Deploy packaged war file to a local application server</echo>
-        <echo>[ant clean] clean target files, including generated reports!</echo>
-        <echo/>
-        <echo>Note: Default target is help</echo>
-        <echo>----------------------- End of usage ---------------------</echo>
+    <target name="about" description="Show help content">
         <echo>Author: Xiangqian.Liu&lt;smartlitchi@gmail.com&gt;</echo>
-        <echo>You may dispatch and modify this build system for free</echo>
+        <echo>Copyright 2008 - 2013 Liu Xiangqian</echo>
+        <echo>License: The MIT License</echo>
     </target>
 
     <target name="init">
         <mkdir dir="${build.production.classes}"/>
         <mkdir dir="${build.instrument.classes}"/>
+
         <mkdir dir="${reports.coverage.data}"/>
-        <mkdir dir="${reports.coverage.report}"/>
+        <mkdir dir="${reports.coverage.java.data}"/>
+        <mkdir dir="${reports.coverage.javascript.data}"/>
+        <mkdir dir="${reports.coverage.java.report}"/>
+        <mkdir dir="${reports.coverage.javascript.report}"/>
+
         <mkdir dir="${build.test.classes}"/>
         <mkdir dir="${build.test.tmp}"/>
-        <mkdir dir="${reports.junit.data}"/>
-        <mkdir dir="${reports.junit.report}"/>
+
+        <mkdir dir="${reports.ut.data}"/>
+        <mkdir dir="${reports.ut.java.data}"/>
+        <mkdir dir="${reports.ut.javascript.data}"/>
+        <mkdir dir="${reports.ut.report}"/>
+        <mkdir dir="${reports.ut.java.report}"/>
+        <mkdir dir="${reports.ut.javascript.report}"/>
+
         <mkdir dir="${reports.findbugs.report}"/>
         <mkdir dir="${reports.pmd.data}"/>
         <mkdir dir="${reports.pmd.report}"/>
         <mkdir dir="${reports.simian.data}"/>
         <mkdir dir="${reports.simian.report}"/>
+
         <mkdir dir="${docs.javadoc}"/>
+
         <mkdir dir="${artifact.package.path}"/>
         <mkdir dir="${artifact.flat.path}"/>        
     </target>
@@ -294,7 +301,7 @@
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
-            <batchtest fork="yes"   todir="${reports.junit.data}">
+            <batchtest fork="yes"   todir="${reports.ut.java.data}">
                 <fileset dir="${build.test.classes}">
                     <include name = "**/*Test*.class"/>
                     <exclude name = "**/AllTests.class"/>
@@ -316,33 +323,33 @@
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
-            <test name="${test}" todir="${reports.junit.data}"/>
+            <test name="${test}" todir="${reports.ut.java.data}"/>
         </junit>
     </target>
 
     <target name="junit.report" depends="junit.run.all"
             description="Generate unit test report in xml and html format">
-        <junitreport todir="${reports.junit.report}">
-            <fileset dir="${reports.junit.data}">
+        <junitreport todir="${reports.ut.java.report}">
+            <fileset dir="${reports.ut.java.data}">
                 <include name="TEST-*.xml"/>
             </fileset>
-            <report format="frames" todir="${reports.junit.report}"/>
+            <report format="frames" todir="${reports.ut.java.report}"/>
         </junitreport>
     </target>
 
     <target name="cc.report" depends="cc.enable, junit.run.all"
             description="Generate unit test code coverage report">
         <clover-report>
-            <current outfile="${reports.coverage.file.name}">
+            <current outfile="${reports.coverage.java.file.name}">
                 <format type="xml"/>
             </current>
           </clover-report>
-        <clover-html-report outdir="${reports.coverage.report}"/>
+        <clover-html-report outdir="${reports.coverage.java.report}"/>
     </target>
 
     <target name="cc.open" depends="cc.report">
         <exec executable="open">
-            <arg line="${reports.coverage.report}/index.html"/>
+            <arg line="${reports.coverage.java.report}/index.html"/>
         </exec>
     </target>
 
@@ -395,7 +402,7 @@
         <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
     </target>
 
-    <target name="reportall" depends="findbugs,pmd,simian,sonar,cc.report"
+    <target name="reportall" depends="findbugs,pmd,simian,sonar,cc.report,javascript.test"
             description="Generate code coverage, unit test, findbugs and PMD report"/>
 
     <target name="docs.javadoc" description="Generate java doc">
@@ -441,6 +448,15 @@
                 <path refid="production.run.classpath"/>
             </classpath>
         </java>
+    </target>
+
+    <target name="javascript.test" depends="init" description="Run javascript unit test">
+        <exec executable="npm" dir="${work}">
+            <arg line="install"/>
+        </exec>
+        <exec executable="npm" dir="${work}">
+            <arg line="test"/>
+        </exec>
     </target>
 
     <target name="build.flat" depends="cc.disable, compile">
