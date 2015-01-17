@@ -87,7 +87,7 @@
     <property name="sonar.projectBaseDir" value="${work}"/>
     <property name="sonar.sourceEncoding" value="UTF-8" />
     <property name="sonar.clover.reportPath" value="${reports.coverage.java.file.name}"/>
-    <!--<property name="sonar.javascript.lcov.reportPath" value="${reports.coverage.javascript.file.name}"/>-->
+    <property name="sonar.javascript.lcov.reportPath" value="${reports.coverage.javascript.file.name}"/>
 
     <path id="sonar.classpath">
         <fileset dir="${sonar.home}">
