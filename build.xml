@@ -294,7 +294,7 @@
         <junit printsummary      = "true"
                    forkmode      = "perBatch"
                    fork          = "true"
-                   haltonfailure = "false"
+                   haltonfailure = "true"
                    maxmemory     = "2048M">
             <classpath>
                 <path refid="test.run.classpath"/>
