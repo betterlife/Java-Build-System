@@ -306,6 +306,7 @@
                     <include name = "**/*Test*.class"/>
                     <exclude name = "**/AllTests.class"/>
                     <exclude name = "**/*$__CLR*"/>
+                    <exclude name= "**/*$*.class"/>
                 </fileset>
             </batchtest>
         </junit>
