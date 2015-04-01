@@ -76,9 +76,9 @@
     <property name = "manifest.file.name"             value = "manifest.yml"/>
 
     <!-- Liberty scripts -->
-    <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/server"/>
-    <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/server"/>
-    <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/server"/>
+    <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/catalina.sh"/>
+    <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/catalina.sh"/>
+    <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/catalina.sh"/>
 
     <!-- Define the Sonar project properties -->
     <property name="sonar.projectVersion" value="${assemble.package.version}"/>
@@ -490,14 +490,14 @@
         </copy>
     </target>
 
-    <target name="server.start" depends="build.war" description="Start Application server">
+    <target name="server.start" depends="build.flat" description="Start Application server">
         <antcall target="_server.internal.cmd">
             <param name="cmd" value="${application.server.start.cmd}"/>
             <param name="cmd.param" value="start"/>
         </antcall>
     </target>
 
-    <target name="server.debug" depends="build.war" description="Start Application server in debug mode">
+    <target name="server.debug" depends="build.flat" description="Start Application server in debug mode">
         <antcall target="_server.internal.cmd">
             <param name="cmd" value="${application.server.start.cmd}"/>
             <param name="cmd.param" value="debug"/>
