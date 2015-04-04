@@ -76,7 +76,7 @@
     <property name = "manifest.file.name"             value = "manifest.yml"/>
 
     <!-- Liberty scripts -->
-    <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/catalina.sh"/>
+    <property name = "application.server.start.cmd"   value = "${application.server.install.path}/bin/startup.sh"/>
     <property name = "application.server.stop.cmd"    value = "${application.server.install.path}/bin/catalina.sh"/>
     <property name = "application.server.status.cmd"  value = "${application.server.install.path}/bin/catalina.sh"/>
 
